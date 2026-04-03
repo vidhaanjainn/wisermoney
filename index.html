@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WiserMoney — Know Your Investor DNA</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy: #0B1628;
+  --navy-2: #112040;
+  --navy-3: #1A2F55;
+  --navy-4: #243A6A;
+  --gold: #D4A843;
+  --gold-2: #E8C97A;
+  --gold-pale: rgba(212,168,67,0.12);
+  --gold-border: rgba(212,168,67,0.25);
+  --cream: #F5EDD6;
+  --cream-soft: rgba(245,237,214,0.08);
+  --white: #FDFAF4;
+  --text: #EAE4D8;
+  --text-soft: rgba(234,228,216,0.65);
+  --text-muted: rgba(234,228,216,0.38);
+  --border: rgba(234,228,216,0.1);
+  --border-2: rgba(234,228,216,0.18);
+  --sage: #4A9B6F;
+  --sage-pale: rgba(74,155,111,0.12);
+  --rust: #D4603A;
+  --rust-pale: rgba(212,96,58,0.12);
+  --teal: #2A9D8F;
+  --teal-pale: rgba(42,157,143,0.12);
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.4);
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle grid texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle at 20% 20%, rgba(212,168,67,0.04) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(42,157,143,0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+.header {
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(11,22,40,0.92);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Fraunces', serif;
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: -0.3px;
+}
+.logo span { color: var(--gold); }
+
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.header-tag {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: var(--gold-pale);
+  border: 1px solid var(--gold-border);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* ── PROGRESS ── */
+.progress-wrap { background: var(--border); height: 2px; }
+.progress-fill {
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-2));
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── CONTAINER ── */
+.container {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 36px 20px 100px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── STEP LABELS ── */
+.step-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+/* ── HEADINGS ── */
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(24px, 6vw, 34px);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.section-title em { font-style: italic; color: var(--gold); }
+
+.section-sub {
+  font-size: 14px;
+  color: var(--text-soft);
+  margin-bottom: 28px;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--navy-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+/* ── FORM ── */
+.form-group { margin-bottom: 18px; }
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-soft);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+label .opt { color: var(--text-muted); font-weight: 300; text-transform: none; font-size: 11px; }
+
+input[type=text], input[type=email], input[type=tel], input[type=number], select {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--navy-3);
+  border: 1.5px solid var(--border-2);
+  border-radius: 10px;
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,168,67,0.1);
+}
+input::placeholder { color: var(--text-muted); }
+select option { background: var(--navy-2); }
+
+.pfx { position: relative; }
+.pfx-symbol {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+.pfx input { padding-left: 28px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:440px){ .two-col { grid-template-columns: 1fr; } }
+
+.helper { font-size: 11px; color: var(--text-muted); margin-top: 5px; line-height: 1.4; }
+
+/* ── CHOICE CARDS ── */
+.choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.choice-grid.three-col { grid-template-columns: 1fr 1fr 1fr; }
+@media(max-width:420px){ .choice-grid { grid-template-columns: 1fr; } .choice-grid.three-col { grid-template-columns: 1fr 1fr; } }
+
+.cc {
+  background: var(--navy-3);
+  border: 1.5px solid var(--border-2);
+  border-radius: 10px;
+  padding: 13px 14px;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: left;
+}
+.cc:hover { border-color: var(--gold-border); background: var(--navy-4); }
+.cc.sel { border-color: var(--gold); background: var(--gold-pale); box-shadow: 0 0 0 3px rgba(212,168,67,0.08); }
+.cc .em { font-size: 20px; margin-bottom: 5px; display: block; }
+.cc .lbl { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3; }
+.cc .desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+/* ── MULTI SELECT TAG ── */
+.tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.tag {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border-2);
+  background: var(--navy-3);
+  color: var(--text-soft);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+}
+.tag:hover { border-color: var(--gold-border); color: var(--text); }
+.tag.sel { border-color: var(--gold); background: var(--gold-pale); color: var(--gold-2); font-weight: 500; }
+
+/* ── SCENARIO (behavioural) ── */
+.scenario {
+  background: var(--navy-3);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.scenario .qnum { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.scenario .qtxt { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 300; line-height: 1.45; margin-bottom: 14px; color: var(--white); }
+
+.s-opts { display: flex; flex-direction: column; gap: 7px; }
+.s-opt {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 13px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-soft);
+  transition: all 0.18s;
+  text-align: left;
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+}
+.s-opt:hover { background: rgba(212,168,67,0.08); border-color: var(--gold-border); color: var(--text); }
+.s-opt.sel { background: rgba(212,168,67,0.14); border-color: var(--gold); color: var(--gold-2); }
+
+/* ── BUTTONS ── */
+.btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 6px;
+  letter-spacing: 0.2px;
+}
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), #E8A020);
+  color: var(--navy);
+}
+.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(212,168,67,0.3); }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 11px;
+}
+.btn-ghost:hover { color: var(--text-soft); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+/* ── ERROR ── */
+.err {
+  background: var(--rust-pale);
+  border: 1px solid rgba(212,96,58,0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #E8856A;
+  margin-bottom: 14px;
+}
+
+/* ── WAITLIST TOGGLE ── */
+.wl-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--gold-pale);
+  border: 1px solid var(--gold-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.2s;
+}
+.wl-toggle:hover { background: rgba(212,168,67,0.18); }
+.sw { width: 38px; height: 21px; background: var(--border-2); border-radius: 11px; position: relative; flex-shrink: 0; transition: background 0.2s; }
+.sw.on { background: var(--gold); }
+.sw-k { width: 17px; height: 17px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.sw.on .sw-k { transform: translateX(17px); }
+.wl-txt strong { display: block; font-size: 13px; font-weight: 500; color: var(--gold-2); }
+.wl-txt span { font-size: 11px; color: var(--text-muted); }
+
+/* ── LOADING ── */
+.loading { text-align: center; padding: 60px 20px; }
+.spinner {
+  width: 56px; height: 56px;
+  margin: 0 auto 24px;
+  position: relative;
+}
+.spinner::before, .spinner::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid transparent;
+}
+.spinner::before { border-top-color: var(--gold); border-right-color: var(--gold); animation: spin 1s linear infinite; }
+.spinner::after { border-bottom-color: var(--teal); border-left-color: var(--teal); animation: spin 1s linear infinite reverse; inset: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.l-steps { display: flex; flex-direction: column; gap: 10px; max-width: 260px; margin: 24px auto 0; text-align: left; }
+.l-step { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 10px; transition: color 0.3s; }
+.l-step.active { color: var(--text); font-weight: 500; }
+.l-step.done { color: var(--sage); }
+.l-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-2); flex-shrink: 0; transition: background 0.3s; }
+.l-step.active .l-dot { background: var(--gold); }
+.l-step.done .l-dot { background: var(--sage); }
+
+/* ── REPORT ── */
+.report { animation: fadeUp 0.5s ease; }
+@keyframes fadeUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+
+/* Archetype hero */
+.arch-hero {
+  background: linear-gradient(135deg, var(--navy-3) 0%, var(--navy-4) 100%);
+  border: 1px solid var(--gold-border);
+  border-radius: 20px;
+  padding: 32px 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.arch-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,67,0.12), transparent 70%);
+}
+.arch-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: -40px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(42,157,143,0.08), transparent 70%);
+}
+.arch-icon { font-size: 52px; margin-bottom: 12px; display: block; position: relative; z-index: 1; }
+.arch-pre { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; position: relative; z-index: 1; }
+.arch-name { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 400; color: var(--white); margin-bottom: 10px; position: relative; z-index: 1; }
+.arch-tag { font-size: 14px; color: var(--text-soft); font-weight: 300; max-width: 300px; margin: 0 auto 16px; line-height: 1.5; position: relative; z-index: 1; }
+.risk-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px; color: var(--gold-2); font-weight: 500;
+  position: relative; z-index: 1;
+}
+
+/* Percentile banner */
+.pct-banner {
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.pct-banner.top { background: linear-gradient(135deg, rgba(74,155,111,0.15), rgba(42,157,143,0.1)); border: 1px solid rgba(74,155,111,0.3); }
+.pct-banner.mid { background: var(--gold-pale); border: 1px solid var(--gold-border); }
+.pct-banner.low { background: var(--teal-pale); border: 1px solid rgba(42,157,143,0.3); }
+.pct-number { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; color: var(--gold); flex-shrink: 0; }
+.pct-text strong { display: block; font-size: 14px; color: var(--white); margin-bottom: 3px; }
+.pct-text span { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+/* R-card (report card) */
+.r-card {
+  background: var(--navy-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 14px;
+}
+.r-card-title {
+  font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 8px;
+}
+.r-card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Allocation bars */
+.alloc-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.alloc-lbl { font-size: 12px; color: var(--text-soft); width: 90px; flex-shrink: 0; }
+.alloc-track { flex: 1; background: var(--border); border-radius: 3px; height: 7px; overflow: hidden; }
+.alloc-fill { height: 7px; border-radius: 3px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+.alloc-pct { font-size: 13px; font-weight: 500; color: var(--text); width: 34px; text-align: right; flex-shrink: 0; }
+
+/* What-if panel */
+.whatif-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+@media(max-width:420px){ .whatif-grid { grid-template-columns: 1fr; } }
+
+.wi-col {
+  background: var(--navy-3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  position: relative;
+}
+.wi-col.best { border-color: var(--gold-border); background: var(--gold-pale); }
+.wi-col.best::before { content: 'Optimised'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--navy); font-size: 9px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
+.wi-strategy { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+.wi-rate { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+.wi-amount { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; color: var(--text); }
+.wi-col.best .wi-amount { color: var(--gold); }
+.wi-years { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+/* LIC warning */
+.lic-warn {
+  background: linear-gradient(135deg, rgba(212,96,58,0.12), rgba(212,96,58,0.06));
+  border: 1px solid rgba(212,96,58,0.3);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.lic-warn-icon { font-size: 22px; flex-shrink: 0; }
+.lic-warn-text strong { display: block; font-size: 13px; color: #E8856A; margin-bottom: 4px; }
+.lic-warn-text p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+/* Compounding table */
+.c-table { width: 100%; border-collapse: collapse; }
+.c-table th { font-size: 10px; font-weight: 500; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-muted); text-align: left; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.c-table td { padding: 13px 0; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.c-table tr:last-child td { border-bottom: none; }
+.c-table .yr { font-weight: 500; color: var(--text-soft); }
+.c-table .corp { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; color: var(--white); }
+.c-table .agg { color: var(--gold); font-size: 14px; font-weight: 500; }
+.c-table .badge { font-size: 10px; color: var(--sage); background: var(--sage-pale); padding: 2px 7px; border-radius: 8px; font-weight: 500; }
+
+/* SIP highlight */
+.sip-hl {
+  background: linear-gradient(135deg, var(--navy-4), var(--navy-3));
+  border: 1px solid var(--gold-border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sip-hl .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+.sip-hl .amt { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; color: var(--gold); }
+.sip-hl .sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+/* Insights */
+.insight {
+  display: flex; gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.insight:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.ins-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.ins-icon.str { background: var(--sage-pale); }
+.ins-icon.cau { background: var(--rust-pale); }
+.ins-icon.act { background: var(--gold-pale); }
+.ins-icon.ins { background: var(--teal-pale); }
+.insight h4 { font-size: 13px; font-weight: 500; color: var(--white); margin-bottom: 3px; }
+.insight p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+/* Insurance nudge */
+.ins-nudge {
+  background: var(--teal-pale);
+  border: 1px solid rgba(42,157,143,0.3);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+.ins-nudge strong { color: var(--teal); display: block; margin-bottom: 4px; font-size: 13px; }
+
+/* CTAs */
+.cta-block { margin-top: 24px; }
+.cta-main {
+  background: linear-gradient(135deg, var(--navy-3), var(--navy-4));
+  border: 1px solid var(--gold-border);
+  border-radius: 18px;
+  padding: 24px;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cta-main:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(212,168,67,0.15); }
+.cta-pre { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.cta-title { font-family: 'Fraunces', serif; font-size: 22px; color: var(--white); margin-bottom: 8px; }
+.cta-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
+.cta-btn-inner {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, var(--gold), #E8A020);
+  color: var(--navy);
+  padding: 11px 20px;
+  border-radius: 9px;
+  font-size: 13px; font-weight: 600;
+}
+
+.cta-course {
+  background: var(--gold-pale);
+  border: 1px solid var(--gold-border);
+  border-radius: 18px;
+  padding: 20px 24px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cta-course:hover { background: rgba(212,168,67,0.18); }
+.cta-course .cta-title { font-size: 18px; color: var(--gold-2); margin-bottom: 6px; }
+.cta-course .cta-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+.cta-course .cta-btn-inner { background: var(--navy); color: var(--gold-2); }
+
+.privacy { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 20px; line-height: 1.6; }
+
+/* ── LANDING FEATURES ── */
+.feat-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+.feat {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--navy-2);
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.feat-icon { font-size: 22px; flex-shrink: 0; }
+.feat strong { display: block; font-size: 13px; font-weight: 500; color: var(--text); }
+.feat span { font-size: 12px; color: var(--text-muted); }
+
+/* ── UTILS ── */
+.hidden { display: none !important; }
+.mt8 { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">Wiser<span>Money</span></div>
+  <div class="header-right">
+    <div class="header-tag">Investor DNA</div>
+  </div>
+</header>
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<div class="container" id="app">
+
+  <!-- ══ STEP 0: LANDING ══ -->
+  <div id="s0">
+    <div style="padding:16px 0 8px">
+      <div style="font-size:52px;margin-bottom:18px">🧬</div>
+      <div class="step-label">Free · 5 Minutes · Personalised</div>
+      <h1 class="section-title">Discover your<br><em>Investor DNA</em></h1>
+      <p class="section-sub">Answer a few honest questions about your finances and mindset. Get a personalised report that tells you exactly what kind of investor you are — and how your money should work.</p>
+      <div class="feat-list">
+        <div class="feat"><span class="feat-icon">🎯</span><div><strong>Your Investor Archetype</strong><span>One of 8 profiles built for Indian investors</span></div></div>
+        <div class="feat"><span class="feat-icon">📊</span><div><strong>Allocation Blueprint</strong><span>Equity, debt, gold & emergency breakdown</span></div></div>
+        <div class="feat"><span class="feat-icon">📈</span><div><strong>Compounding Simulator</strong><span>Your money at 10, 20 & 30 years</span></div></div>
+        <div class="feat"><span class="feat-icon">🔍</span><div><strong>"What If" Analysis</strong><span>Cost of staying where you are vs. optimising</span></div></div>
+      </div>
+      <button class="btn btn-gold" onclick="go(1)">Find My Investor DNA →</button>
+      <p class="privacy" style="margin-top:14px">🔒 Your data is private. We don't sell it or spam you. Ever.</p>
+    </div>
+  </div>
+
+  <!-- ══ STEP 1: PERSONAL ══ -->
+  <div id="s1" class="hidden">
+    <div class="step-label">Step 1 of 5 — About You</div>
+    <h2 class="section-title">Let's start with <em>you</em></h2>
+    <p class="section-sub">Basic details to personalise your report.</p>
+
+    <div class="form-group"><label>Full Name</label><input type="text" id="f_name" placeholder="Rahul Sharma"/></div>
+    <div class="two-col">
+      <div class="form-group"><label>Email</label><input type="email" id="f_email" placeholder="you@gmail.com"/></div>
+      <div class="form-group"><label>Phone <span class="opt">(optional)</span></label><input type="tel" id="f_phone" placeholder="9876543210"/></div>
+    </div>
+    <div class="two-col">
+      <div class="form-group"><label>Age</label><input type="number" id="f_age" placeholder="26" min="18" max="70"/></div>
+      <div class="form-group"><label>City</label><input type="text" id="f_city" placeholder="Mumbai"/></div>
+    </div>
+
+    <div class="wl-toggle" onclick="toggleWL()" id="wlToggle">
+      <div class="sw" id="wlSw"><div class="sw-k"></div></div>
+      <div class="wl-txt">
+        <strong>🎓 Join Course Waitlist — Early Bird Price</strong>
+        <span>First to know + locked-in discount when Vidhaan launches</span>
+      </div>
+    </div>
+
+    <div id="e1" class="err hidden"></div>
+    <button class="btn btn-gold mt16" onclick="v1()">Continue →</button>
+    <p class="privacy mt8">🔒 No spam. Just your report and early access if you opt in.</p>
+  </div>
+
+  <!-- ══ STEP 2: FINANCES ══ -->
+  <div id="s2" class="hidden">
+    <div class="step-label">Step 2 of 5 — Your Finances</div>
+    <h2 class="section-title">Your money, <em>honestly</em></h2>
+    <p class="section-sub">Approximate numbers are absolutely fine. This is private and only used to calculate your SIP capacity and compounding projections.</p>
+
+    <div class="form-group"><label>Monthly Take-Home Income</label><div class="pfx"><span class="pfx-symbol">₹</span><input type="number" id="f_income" placeholder="75,000"/></div></div>
+    <div class="form-group"><label>Monthly Living Expenses <span class="opt">(rent, food, subscriptions)</span></label><div class="pfx"><span class="pfx-symbol">₹</span><input type="number" id="f_expenses" placeholder="35,000"/></div></div>
+    <div class="form-group"><label>Monthly EMIs / Loan Repayments <span class="opt">(0 if none)</span></label><div class="pfx"><span class="pfx-symbol">₹</span><input type="number" id="f_emi" placeholder="0"/></div></div>
+    <div class="form-group"><label>Existing Investments <span class="opt">(total approximate value)</span></label><div class="pfx"><span class="pfx-symbol">₹</span><input type="number" id="f_existing" placeholder="50,000"/></div><p class="helper">MFs, stocks, FDs, PPF, LIC — everything you've already put away</p></div>
+
+    <div class="form-group">
+      <label>Where is most of your existing money sitting right now?</label>
+      <div class="choice-grid" id="moneyGrid">
+        <div class="cc" onclick="selMoney('savings',this)" data-val="savings"><span class="em">🏦</span><div class="lbl">Savings Account / FD</div></div>
+        <div class="cc" onclick="selMoney('lic',this)" data-val="lic"><span class="em">📋</span><div class="lbl">LIC / Endowment Policy</div></div>
+        <div class="cc" onclick="selMoney('mf',this)" data-val="mf"><span class="em">📈</span><div class="lbl">Mutual Funds</div></div>
+        <div class="cc" onclick="selMoney('stocks',this)" data-val="stocks"><span class="em">📊</span><div class="lbl">Stocks / Equity</div></div>
+        <div class="cc" onclick="selMoney('mix',this)" data-val="mix"><span class="em">🎯</span><div class="lbl">Mix of Above</div></div>
+        <div class="cc" onclick="selMoney('none',this)" data-val="none"><span class="em">💭</span><div class="lbl">Haven't Invested Yet</div></div>
+      </div>
+    </div>
+
+    <div id="e2" class="err hidden"></div>
+    <button class="btn btn-gold" onclick="v2()">Continue →</button>
+    <button class="btn btn-ghost" onclick="go(1)">← Back</button>
+  </div>
+
+  <!-- ══ STEP 3: FINANCIAL HEALTH ══ -->
+  <div id="s3" class="hidden">
+    <div class="step-label">Step 3 of 5 — Financial Health</div>
+    <h2 class="section-title">Your financial <em>foundation</em></h2>
+    <p class="section-sub">A few quick questions to understand where you stand beyond just investments.</p>
+
+    <div class="form-group">
+      <label>Your Investing Experience</label>
+      <div class="choice-grid" id="expGrid">
+        <div class="cc" onclick="selExp('new',this)"><span class="em">🌱</span><div class="lbl">New Investor</div><div class="desc">Haven't started yet</div></div>
+        <div class="cc" onclick="selExp('tried',this)"><span class="em">🔄</span><div class="lbl">Tried Before</div><div class="desc">Started but not consistent</div></div>
+        <div class="cc" onclick="selExp('active',this)"><span class="em">📈</span><div class="lbl">Actively Investing</div><div class="desc">Regular SIPs or trades</div></div>
+        <div class="cc" onclick="selExp('advanced',this)"><span class="em">🧠</span><div class="lbl">Advanced</div><div class="desc">Manage own portfolio</div></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Comfortable investing in <span class="opt">(select all that apply)</span></label>
+      <div class="tag-grid" id="comfortGrid">
+        <div class="tag" onclick="toggleComfort('fd',this)">Fixed Deposits</div>
+        <div class="tag" onclick="toggleComfort('mf',this)">Mutual Funds</div>
+        <div class="tag" onclick="toggleComfort('stocks',this)">Direct Stocks</div>
+        <div class="tag" onclick="toggleComfort('gold',this)">Gold / SGBs</div>
+        <div class="tag" onclick="toggleComfort('nps',this)">NPS / PPF</div>
+        <div class="tag" onclick="toggleComfort('realestate',this)">Real Estate</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Do you have Term Insurance?</label>
+      <div class="choice-grid three-col" id="termGrid">
+        <div class="cc" onclick="selTerm('yes',this)"><div class="lbl">✅ Yes, I do</div></div>
+        <div class="cc" onclick="selTerm('no',this)"><div class="lbl">❌ No, I don't</div></div>
+        <div class="cc" onclick="selTerm('dontknow',this)"><div class="lbl">🤷 What's that?</div></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>LIC or Endowment / Money-Back Policy?</label>
+      <div class="choice-grid three-col" id="licGrid">
+        <div class="cc" onclick="selLIC('yes',this)"><div class="lbl">Yes, I pay premiums</div></div>
+        <div class="cc" onclick="selLIC('no',this)"><div class="lbl">No</div></div>
+        <div class="cc" onclick="selLIC('cancelled',this)"><div class="lbl">Had one, cancelled</div></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Do you have Health Insurance?</label>
+      <div class="choice-grid three-col" id="healthGrid">
+        <div class="cc" onclick="selHealth('yes',this)"><div class="lbl">Yes, covered</div></div>
+        <div class="cc" onclick="selHealth('employer',this)"><div class="lbl">Only employer cover</div></div>
+        <div class="cc" onclick="selHealth('no',this)"><div class="lbl">No health cover</div></div>
+      </div>
+    </div>
+
+    <div id="e3" class="err hidden"></div>
+    <button class="btn btn-gold" onclick="v3()">Continue →</button>
+    <button class="btn btn-ghost" onclick="go(2)">← Back</button>
+  </div>
+
+  <!-- ══ STEP 4: GOALS ══ -->
+  <div id="s4" class="hidden">
+    <div class="step-label">Step 4 of 5 — Goals</div>
+    <h2 class="section-title">What are you <em>building for?</em></h2>
+    <p class="section-sub">Pick your primary goal. This shapes your entire allocation strategy.</p>
+
+    <div class="choice-grid" id="goalGrid">
+      <div class="cc" onclick="selGoal('wealth',this)"><span class="em">💰</span><div class="lbl">Long-Term Wealth</div><div class="desc">Grow aggressively over years</div></div>
+      <div class="cc" onclick="selGoal('retirement',this)"><span class="em">🏖️</span><div class="lbl">Early Retirement</div><div class="desc">Financially independent</div></div>
+      <div class="cc" onclick="selGoal('house',this)"><span class="em">🏠</span><div class="lbl">Buy a House</div><div class="desc">Down payment or full purchase</div></div>
+      <div class="cc" onclick="selGoal('kids',this)"><span class="em">👶</span><div class="lbl">Kids' Future</div><div class="desc">Education & security</div></div>
+      <div class="cc" onclick="selGoal('emergency',this)"><span class="em">🛡️</span><div class="lbl">Emergency Fund First</div><div class="desc">Safety net priority</div></div>
+      <div class="cc" onclick="selGoal('business',this)"><span class="em">🚀</span><div class="lbl">Fund a Business</div><div class="desc">Build capital for self</div></div>
+    </div>
+
+    <div class="form-group">
+      <label>Investment Time Horizon</label>
+      <select id="f_horizon">
+        <option value="">Select years...</option>
+        <option value="2">Less than 2 years</option>
+        <option value="5">2–5 years</option>
+        <option value="10">5–10 years</option>
+        <option value="15">10–15 years</option>
+        <option value="25">15–25 years</option>
+        <option value="30">25+ years</option>
+      </select>
+    </div>
+
+    <div id="e4" class="err hidden"></div>
+    <button class="btn btn-gold" onclick="v4()">Continue →</button>
+    <button class="btn btn-ghost" onclick="go(3)">← Back</button>
+  </div>
+
+  <!-- ══ STEP 5: BEHAVIOURAL ══ -->
+  <div id="s5" class="hidden">
+    <div class="step-label">Step 5 of 5 — Your Mindset</div>
+    <h2 class="section-title">How do you <em>think</em> about money?</h2>
+    <p class="section-sub">5 real scenarios. No right or wrong — this reveals your true investor psychology.</p>
+    <div id="scenWrap"></div>
+    <div id="e5" class="err hidden"></div>
+    <button class="btn btn-gold" onclick="v5()">Analyse My DNA →</button>
+    <button class="btn btn-ghost" onclick="go(4)">← Back</button>
+  </div>
+
+  <!-- ══ LOADING ══ -->
+  <div id="sLoading" class="hidden loading">
+    <div class="spinner"></div>
+    <h2 style="font-family:'Fraunces',serif;font-size:24px;font-weight:300;margin-bottom:8px;color:var(--white)">Analysing your DNA...</h2>
+    <p style="font-size:13px;color:var(--text-muted)">This takes about 15 seconds</p>
+    <div class="l-steps" id="lSteps">
+      <div class="l-step active" id="ls1"><div class="l-dot"></div>Mapping your financial profile</div>
+      <div class="l-step" id="ls2"><div class="l-dot"></div>Running behavioural analysis</div>
+      <div class="l-step" id="ls3"><div class="l-dot"></div>Calculating SIP capacity & percentile</div>
+      <div class="l-step" id="ls4"><div class="l-dot"></div>Generating your investor archetype</div>
+      <div class="l-step" id="ls5"><div class="l-dot"></div>Building compounding projections</div>
+    </div>
+  </div>
+
+  <!-- ══ REPORT ══ -->
+  <div id="sReport" class="hidden report"></div>
+
+</div>
+
+<script>
+// ── CONFIG ──
+const GEMINI_KEY = 'AIzaSyCNKObMtue7rmk7-njdzJV1Xo8OCg03a1E';
+const SB_URL = 'https://hjuwbgmsgwezpnqwpcve.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdXdiZ21zZ3dlenBucXdwY3ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NjUyMjIsImV4cCI6MjA5MDQ0MTIyMn0.GjN0DpEgjwikw7hJ0vKqNfyEPzFd7qAkTcKSMCL5C4Q';
+const CALENDLY = 'https://calendly.com/vidhaanjain/investmentfirst';
+const TOTAL = 5;
+
+// ── STATE ──
+const S = {
+  waitlist: false,
+  moneyWhere: null,
+  experience: null,
+  comfort: [],
+  termInsurance: null,
+  licPolicy: null,
+  healthInsurance: null,
+  goal: null,
+  bAnswers: {}
+};
+
+// ── SCENARIOS ──
+const SCENARIOS = [
+  { id:'q1', text:'Your portfolio drops 25% in 2 months. Nifty is bleeding. What do you do?', opts:[{l:"Panic sell — protect what's left",s:1},{l:"Do nothing, but lose sleep every night",s:3},{l:"Hold steady. I knew this could happen.",s:6},{l:"Buy more. This is a discount sale.",s:9}] },
+  { id:'q2', text:'You get ₹1 lakh unexpectedly. What\'s your first instinct?', opts:[{l:"Put it in FD — safety first",s:2},{l:"Pay off any pending loan/EMI",s:4},{l:"Add it to my existing SIPs or MFs",s:6},{l:"Buy individual stocks I've been watching",s:9}] },
+  { id:'q3', text:'A friend tells you a "sure shot" stock is going to 10x. You...', opts:[{l:"Invest a significant chunk immediately",s:1},{l:"Put a small amount just in case",s:4},{l:"Research it first, then maybe a small bet",s:7},{l:"Ignore it. Tips don't work.",s:9}] },
+  { id:'q4', text:'How often do you check your investment portfolio?', opts:[{l:"Multiple times a day",s:2},{l:"Every few days",s:4},{l:"Once a month",s:7},{l:"Quarterly or less",s:9}] },
+  { id:'q5', text:'What does financial success look like to you in 10 years?', opts:[{l:"No loans, stable job, decent savings",s:3},{l:"₹50L+ corpus, own house, secure life",s:5},{l:"Enough to not depend on a job if I choose",s:8},{l:"Full financial independence, multiple income streams",s:10}] }
+];
+
+// ── ARCHETYPES ──
+const ARCHETYPES = {
+  'The Anxious Saver':        { emoji:'🛡️', tagline:'Safety is your superpower — but fear may be quietly costing you real returns.', riskScore:2, range:[5,22],  alloc:{equity:20,debt:50,gold:20,emergency:10}, cagr:8  },
+  'The Cautious Accumulator': { emoji:'🐢', tagline:'Steady and disciplined. You\'re ready to step up the pace without losing sleep.', riskScore:4, range:[23,32], alloc:{equity:40,debt:35,gold:15,emergency:10}, cagr:10 },
+  'The Balanced Builder':     { emoji:'⚖️', tagline:'You balance risk and reward naturally — a rare quality most investors never develop.', riskScore:5, range:[33,38], alloc:{equity:55,debt:25,gold:10,emergency:10}, cagr:11 },
+  'The Confident Investor':   { emoji:'📈', tagline:'You understand markets and have the conviction to build serious wealth over time.', riskScore:7, range:[39,42], alloc:{equity:70,debt:15,gold:5,emergency:10}, cagr:12 },
+  'The Aggressive Compounder':{ emoji:'🚀', tagline:'You have the mindset to build generational wealth. The only variable is execution.', riskScore:9, range:[43,50], alloc:{equity:85,debt:5,gold:0,emergency:10}, cagr:14 }
+};
+
+// ── CURRENT PATH RATES ──
+const PATH_RATES = { savings:6.5, lic:4.5, mf:10.5, stocks:10, mix:8.5, none:3.5 };
+const PATH_LABELS = { savings:'Savings/FD', lic:'LIC/Endowment', mf:'Mutual Funds', stocks:'Stocks', mix:'Mixed Portfolio', none:'Not Invested Yet' };
+
+// ── PERCENTILE DATA (based on RBI/SEBI data) ──
+// Monthly savings benchmarks for Indian households
+function getPercentile(monthlySavings) {
+  if (monthlySavings >= 100000) return { pct: 'Top 1%', cls: 'top', text: 'of Indian households by monthly savings. You are in a truly elite financial position.' };
+  if (monthlySavings >= 50000)  return { pct: 'Top 3%', cls: 'top', text: 'of Indian households by monthly savings. Exceptional savings discipline.' };
+  if (monthlySavings >= 25000)  return { pct: 'Top 8%', cls: 'top', text: 'of Indian households by monthly savings. Well ahead of the vast majority of Indians.' };
+  if (monthlySavings >= 15000)  return { pct: 'Top 15%', cls: 'top', text: 'of Indian households by monthly savings. Significantly above average.' };
+  if (monthlySavings >= 8000)   return { pct: 'Top 25%', cls: 'mid', text: 'of Indian households by monthly savings. You\'re in the top quarter — most Indians save less than ₹5,000/month.' };
+  if (monthlySavings >= 3000)   return { pct: 'Top 40%', cls: 'mid', text: 'of Indian households by monthly savings. Above average for India — most households save under ₹2,500/month.' };
+  return { pct: null, cls: 'low', text: 'Most Indians save less than ₹2,500/month. Any amount you start with puts you ahead. The habit matters more than the number right now.' };
+}
+
+// ── HELPERS ──
+function fmt(n) {
+  if (n >= 10000000) return '₹' + (n/10000000).toFixed(2) + ' Cr';
+  if (n >= 100000)   return '₹' + (n/100000).toFixed(1) + 'L';
+  if (n >= 1000)     return '₹' + (n/1000).toFixed(1) + 'K';
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+
+function compound(sip, rate, years) {
+  const r = rate/100/12, n = years*12;
+  return sip * ((Math.pow(1+r,n)-1)/r) * (1+r);
+}
+
+function compoundLump(principal, rate, years) {
+  return principal * Math.pow(1 + rate/100, years);
+}
+
+// ── NAVIGATION ──
+function go(n) {
+  ['s0','s1','s2','s3','s4','s5','sLoading','sReport'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById('s'+n).classList.remove('hidden');
+  document.getElementById('progressBar').style.width = ((n/TOTAL)*100) + '%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 5000);
+}
+
+// ── SELECTION HANDLERS ──
+function selSingle(gridId, val, el) {
+  document.querySelectorAll('#'+gridId+' .cc').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  return val;
+}
+
+function selMoney(val, el)  { S.moneyWhere = selSingle('moneyGrid', val, el); }
+function selExp(val, el)    { S.experience = selSingle('expGrid', val, el); }
+function selTerm(val, el)   { S.termInsurance = selSingle('termGrid', val, el); }
+function selLIC(val, el)    { S.licPolicy = selSingle('licGrid', val, el); }
+function selHealth(val, el) { S.healthInsurance = selSingle('healthGrid', val, el); }
+function selGoal(val, el)   { S.goal = selSingle('goalGrid', val, el); }
+
+function toggleComfort(val, el) {
+  el.classList.toggle('sel');
+  if (S.comfort.includes(val)) S.comfort = S.comfort.filter(v=>v!==val);
+  else S.comfort.push(val);
+}
+
+function toggleWL() {
+  S.waitlist = !S.waitlist;
+  document.getElementById('wlSw').classList.toggle('on', S.waitlist);
+}
+
+function selScenario(qid, idx, score, el) {
+  document.querySelectorAll('[id^="so_'+qid+'_"]').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  S.bAnswers[qid] = {idx, score};
+}
+
+// ── RENDER SCENARIOS ──
+function renderScenarios() {
+  document.getElementById('scenWrap').innerHTML = SCENARIOS.map((sc,i) => `
+    <div class="scenario">
+      <div class="qnum">Question ${i+1} of ${SCENARIOS.length}</div>
+      <div class="qtxt">${sc.text}</div>
+      <div class="s-opts">
+        ${sc.opts.map((o,j) => `<button class="s-opt" onclick="selScenario('${sc.id}',${j},${o.s},this)" id="so_${sc.id}_${j}">${o.l}</button>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── VALIDATIONS ──
+function v1() {
+  const name = document.getElementById('f_name').value.trim();
+  const email = document.getElementById('f_email').value.trim();
+  const age = parseInt(document.getElementById('f_age').value);
+  if (!name) return showErr('e1','Please enter your name.');
+  if (!email || !email.includes('@')) return showErr('e1','Please enter a valid email.');
+  if (!age || age < 18) return showErr('e1','Please enter your age (18+).');
+  go(2);
+}
+
+function v2() {
+  const income = parseFloat(document.getElementById('f_income').value);
+  const expenses = parseFloat(document.getElementById('f_expenses').value);
+  if (!income || income < 1000) return showErr('e2','Please enter your monthly income.');
+  if (isNaN(expenses) || expenses < 0) return showErr('e2','Please enter your monthly expenses.');
+  if (expenses >= income) return showErr('e2','Expenses look higher than income — please double-check.');
+  if (!S.moneyWhere) return showErr('e2','Please tell us where your money currently sits.');
+  go(3);
+}
+
+function v3() {
+  if (!S.experience) return showErr('e3','Please select your investing experience.');
+  if (!S.termInsurance) return showErr('e3','Please answer the term insurance question.');
+  if (!S.licPolicy) return showErr('e3','Please answer the LIC/endowment question.');
+  if (!S.healthInsurance) return showErr('e3','Please answer the health insurance question.');
+  go(4);
+}
+
+function v4() {
+  if (!S.goal) return showErr('e4','Please select your primary financial goal.');
+  if (!document.getElementById('f_horizon').value) return showErr('e4','Please select your time horizon.');
+  renderScenarios();
+  go(5);
+}
+
+function v5() {
+  const answered = Object.keys(S.bAnswers).length;
+  if (answered < SCENARIOS.length) return showErr('e5',`Please answer all ${SCENARIOS.length} questions. Done: ${answered}.`);
+  runAnalysis();
+}
+
+// ── GATHER DATA ──
+function gather() {
+  const income = parseFloat(document.getElementById('f_income').value)||0;
+  const expenses = parseFloat(document.getElementById('f_expenses').value)||0;
+  const emi = parseFloat(document.getElementById('f_emi').value)||0;
+  const existing = parseFloat(document.getElementById('f_existing').value)||0;
+  const age = parseInt(document.getElementById('f_age').value)||25;
+  const horizon = parseInt(document.getElementById('f_horizon').value)||10;
+  const surplus = income - expenses - emi;
+  const investable = Math.max(0, Math.round(surplus * 0.7));
+  const savings = income - expenses - emi;
+  const bScore = Object.values(S.bAnswers).reduce((a,v)=>a+v.score,0);
+  return {
+    name: document.getElementById('f_name').value.trim(),
+    email: document.getElementById('f_email').value.trim(),
+    phone: document.getElementById('f_phone').value.trim(),
+    city: document.getElementById('f_city').value.trim(),
+    age, income, expenses, emi, existing, surplus, investable, savings,
+    goal: S.goal, horizon,
+    moneyWhere: S.moneyWhere,
+    experience: S.experience,
+    comfort: S.comfort,
+    termInsurance: S.termInsurance,
+    licPolicy: S.licPolicy,
+    healthInsurance: S.healthInsurance,
+    bScore, bAnswers: S.bAnswers,
+    waitlist: S.waitlist
+  };
+}
+
+// ── RULE-BASED FALLBACK ──
+function ruleBased(d) {
+  const sc = d.bScore;
+  let archKey = 'The Balanced Builder';
+  for (const [k,v] of Object.entries(ARCHETYPES)) {
+    if (sc >= v.range[0] && sc <= v.range[1]) { archKey = k; break; }
+  }
+  const arch = ARCHETYPES[archKey];
+  let alloc = {...arch.alloc};
+  // Age adjustment
+  if (d.age < 30 && alloc.equity < 75) { alloc.equity = Math.min(alloc.equity+10, 85); alloc.debt = Math.max(alloc.debt-10, 5); }
+  if (d.age > 50) { alloc.equity = Math.max(alloc.equity-15, 20); alloc.debt += 15; }
+  // Normalize
+  const total = Object.values(alloc).reduce((a,v)=>a+v,0);
+  if (total !== 100) alloc.debt += (100-total);
+
+  const cagr = arch.cagr;
+  const insights = [
+    { type:'str', icon:'✅', title:'Your Strength', text: sc >= 35 ? 'Strong emotional discipline around volatility — this is the rarest and most valuable investing edge.' : 'You prioritise capital protection, which prevents impulsive decisions during market panic.' },
+    { type:'cau', icon:'⚠️', title:'Watch Out For', text: sc < 30 ? 'Fear of loss might keep you in low-yield instruments longer than optimal. Inflation silently erodes FD returns.' : 'Overconfidence in bull runs can lead to concentration risk — diversification is your hedge.' },
+    { type:'act', icon:'🎯', title:'First Action Step', text: d.emi > 0 ? `You carry ₹${(d.emi/1000).toFixed(0)}K in EMIs. If any loan exceeds 12% interest, prioritise clearing it before maximising SIPs.` : `Automate a SIP of ${fmt(d.investable)} immediately. Automation removes emotion from the equation.` }
+  ];
+  return { archetype: archKey, arch, alloc, cagr, aggressiveCagr: 14, insights, riskScore: arch.riskScore };
+}
+
+// ── GEMINI ──
+async function callGemini(d) {
+  const prompt = `You are an expert financial advisor for Indian investors. Analyse this profile and return ONLY valid JSON (no markdown, no backticks, no explanation).
+
+Investor Profile:
+- Name: ${d.name}, Age: ${d.age}, City: ${d.city}
+- Monthly Income: ₹${d.income}, Expenses: ₹${d.expenses}, EMIs: ₹${d.emi}
+- Monthly Investable Surplus: ₹${d.investable}
+- Existing Investments: ₹${d.existing} (currently in: ${d.moneyWhere})
+- Investing Experience: ${d.experience}
+- Comfortable with: ${d.comfort.join(', ')||'not specified'}
+- Term Insurance: ${d.termInsurance}, LIC Policy: ${d.licPolicy}, Health Insurance: ${d.healthInsurance}
+- Primary Goal: ${d.goal}, Time Horizon: ${d.horizon} years
+- Behavioural Score: ${d.bScore}/50 (higher = more risk tolerant)
+
+Choose ONE archetype from: "The Anxious Saver", "The Cautious Accumulator", "The Balanced Builder", "The Confident Investor", "The Aggressive Compounder"
+
+Return this exact JSON:
+{
+  "archetype": "exact name",
+  "riskScore": 1-10,
+  "alloc": {"equity": N, "debt": N, "gold": N, "emergency": N},
+  "cagr": N,
+  "aggressiveCagr": 14,
+  "insights": [
+    {"type":"str","icon":"✅","title":"Your Strength","text":"personalised, mention their actual numbers"},
+    {"type":"cau","icon":"⚠️","title":"Watch Out For","text":"specific caution for their profile"},
+    {"type":"act","icon":"🎯","title":"First Action Step","text":"very specific step in ₹ terms"},
+    {"type":"ins","icon":"💡","title":"Insurance Reality Check","text":"personalised comment on their insurance gaps"}
+  ]
+}
+
+Rules: alloc must sum to 100. cagr 7-14. Be specific to Indian market. Age-adjust equity allocation. If they have LIC endowment, mention the opportunity cost. If no term insurance and age < 40, flag this as urgent.`;
+
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+  });
+  const json = await res.json();
+  const raw = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const clean = raw.replace(/```json|```/g,'').trim();
+  const parsed = JSON.parse(clean);
+  parsed.arch = ARCHETYPES[parsed.archetype] || ARCHETYPES['The Balanced Builder'];
+  return parsed;
+}
+
+// ── SAVE TO SUPABASE ──
+async function saveDB(d, r) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/wisermoney_profiles`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Prefer':'return=minimal'},
+      body: JSON.stringify({
+        name:d.name, email:d.email, phone:d.phone||null, city:d.city||null, age:d.age,
+        monthly_income:d.income, monthly_expenses:d.expenses, monthly_emi:d.emi, existing_investments:d.existing,
+        primary_goal:d.goal, time_horizon:d.horizon,
+        behavioural_answers:d.bAnswers,
+        archetype:r.archetype, archetype_title:r.archetype,
+        risk_score:r.riskScore, allocation:r.alloc,
+        recommended_sip:d.investable, suggested_cagr:r.cagr,
+        ai_report:JSON.stringify({insights:r.insights, moneyWhere:d.moneyWhere, experience:d.experience, comfort:d.comfort, termInsurance:d.termInsurance, licPolicy:d.licPolicy, healthInsurance:d.healthInsurance}),
+        course_waitlist:d.waitlist, source:'direct'
+      })
+    });
+  } catch(e){ console.warn('DB save failed',e); }
+}
+
+// ── RUN ANALYSIS ──
+async function runAnalysis() {
+  const d = gather();
+  document.getElementById('s5').classList.add('hidden');
+  document.getElementById('sLoading').classList.remove('hidden');
+  document.getElementById('progressBar').style.width = '92%';
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  const lsIds = ['ls1','ls2','ls3','ls4','ls5'];
+  let li = 0;
+  const iv = setInterval(()=>{
+    if (li > 0) { document.getElementById(lsIds[li-1]).classList.remove('active'); document.getElementById(lsIds[li-1]).classList.add('done'); }
+    if (li < lsIds.length) { document.getElementById(lsIds[li]).classList.add('active'); li++; }
+    else clearInterval(iv);
+  }, 2600);
+
+  let result;
+  try { result = await callGemini(d); }
+  catch(e) { result = ruleBased(d); }
+
+  clearInterval(iv);
+  await saveDB(d, result);
+  renderReport(d, result);
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('sLoading').classList.add('hidden');
+  document.getElementById('sReport').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── RENDER REPORT ──
+function renderReport(d, r) {
+  const { archetype, arch, alloc, cagr, aggressiveCagr, insights, riskScore } = r;
+  const sip = d.investable;
+  const existing = d.existing;
+  const currentRate = PATH_RATES[d.moneyWhere] || 7;
+  const pctData = getPercentile(d.savings);
+
+  const allocColors = { equity:'#D4A843', debt:'#4A9B6F', gold:'#E8C97A', emergency:'#D4603A' };
+  const allocLabels = { equity:'Equity MFs', debt:'Debt / FD', gold:'Gold / SGBs', emergency:'Emergency' };
+  const riskLabels = ['','Very Low','Low','Low-Moderate','Moderate','Moderate','Moderate-High','High','High','Very High','Aggressive'];
+
+  // What-If panel
+  const wiYears = d.horizon || 10;
+  const wiCurrent = existing > 0 ? compoundLump(existing, currentRate, wiYears) : 0;
+  const wiOptimised = existing > 0 ? compoundLump(existing, cagr, wiYears) : 0;
+  const wiInactive = existing > 0 ? compoundLump(existing, 3.5, wiYears) : 0;
+
+  // Compounding rows
+  const yrs = [10, 20, 30].filter(y => y >= Math.min(d.horizon, 10));
+  const compRows = [10,20,30].map(y => {
+    const base = compound(sip, cagr, y);
+    const agg = compound(sip, aggressiveCagr, y);
+    const diffPct = Math.round(((agg-base)/base)*100);
+    return `<tr>
+      <td class="yr">${y} yrs</td>
+      <td><span class="corp">${fmt(base)}</span><br><span style="font-size:10px;color:var(--text-muted)">${cagr}% CAGR</span></td>
+      <td><span class="agg">${fmt(agg)}</span><br><span class="badge">+${diffPct}% more</span></td>
+    </tr>`;
+  }).join('');
+
+  // Insurance nudges
+  let insNudges = '';
+  if (d.termInsurance === 'no' || d.termInsurance === 'dontknow') {
+    insNudges += `<div class="ins-nudge"><strong>⚡ Term Insurance — Urgent</strong>At age ${d.age}, a ₹1 Cr term cover costs roughly ₹7,000–12,000/year. This is the single most important financial product you don't have yet. Before SIPs, before MFs — sort this first.</div>`;
+  }
+  if (d.licPolicy === 'yes') {
+    insNudges += `<div class="ins-nudge"><strong>🔍 LIC/Endowment Reality Check</strong>Endowment policies typically return 4–5% CAGR over their tenure. The same premium invested in equity MFs over the same period would likely yield 3–4x more. Consider reviewing this with Vidhaan on your strategy call.</div>`;
+  }
+  if (d.healthInsurance === 'employer') {
+    insNudges += `<div class="ins-nudge"><strong>⚠️ Employer Health Cover is Not Enough</strong>Employer cover ends the moment you switch jobs or are between jobs — often when you need it most. A personal floater plan of ₹5–10L costs ₹6,000–15,000/year and is non-negotiable.</div>`;
+  }
+  if (d.healthInsurance === 'no') {
+    insNudges += `<div class="ins-nudge"><strong>🚨 No Health Insurance</strong>One hospitalisation without insurance can wipe out years of savings. Get a ₹5L personal health floater this month — it's more urgent than any investment.</div>`;
+  }
+
+  // LIC what-if message
+  let licMsg = '';
+  if (d.moneyWhere === 'lic' && existing > 0) {
+    const licGrowth = compoundLump(existing, 4.5, wiYears);
+    const mfGrowth = compoundLump(existing, 12, wiYears);
+    licMsg = `<div class="lic-warn"><div class="lic-warn-icon">⚠️</div><div class="lic-warn-text"><strong>The LIC Opportunity Cost</strong><p>Your ₹${fmt(existing)} in LIC/endowment grows to approximately ${fmt(licGrowth)} in ${wiYears} years at 4.5%. The same amount in equity MFs historically grows to ${fmt(mfGrowth)}. Difference: ${fmt(mfGrowth-licGrowth)}. This is worth a conversation.</p></div></div>`;
+  }
+
+  // Percentile block
+  let pctHTML = '';
+  if (pctData.pct) {
+    pctHTML = `<div class="pct-banner ${pctData.cls}">
+      <div class="pct-number">${pctData.pct}</div>
+      <div class="pct-text"><strong>You're ahead of most Indians</strong><span>${pctData.text}</span></div>
+    </div>`;
+  } else {
+    pctHTML = `<div class="pct-banner low">
+      <div style="font-size:28px;flex-shrink:0">💪</div>
+      <div class="pct-text"><strong>Every rupee counts</strong><span>${pctData.text}</span></div>
+    </div>`;
+  }
+
+  const html = `
+    <div class="step-label" style="margin-bottom:8px">Your DNA Report · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+    <h2 class="section-title" style="margin-bottom:20px">Hey ${d.name.split(' ')[0]}, <em>here's your DNA</em></h2>
+
+    <div class="arch-hero">
+      <span class="arch-icon">${arch?.emoji||'📊'}</span>
+      <div class="arch-pre">Your Investor Archetype</div>
+      <div class="arch-name">${archetype}</div>
+      <div class="arch-tag">${arch?.tagline||''}</div>
+      <div class="risk-pill">⚡ Risk Score: ${riskScore}/10 · ${riskLabels[riskScore]||'Moderate'}</div>
+    </div>
+
+    ${pctHTML}
+    ${insNudges}
+    ${licMsg}
+
+    <div class="r-card">
+      <div class="r-card-title">Allocation Blueprint</div>
+      ${Object.entries(alloc).map(([k,v])=>`
+        <div class="alloc-row">
+          <span class="alloc-lbl">${allocLabels[k]}</span>
+          <div class="alloc-track"><div class="alloc-fill" style="width:${v}%;background:${allocColors[k]}"></div></div>
+          <span class="alloc-pct">${v}%</span>
+        </div>
+      `).join('')}
+      <p style="font-size:11px;color:var(--text-muted);margin-top:12px;line-height:1.5">Based on age ${d.age}, ${d.goal} goal, ${d.horizon}-yr horizon, and behavioural profile. Emergency fund target: ${fmt(d.expenses*5)}.</p>
+    </div>
+
+    ${existing > 0 ? `
+    <div class="r-card">
+      <div class="r-card-title">What Happens to Your ₹${fmt(existing)} — "What If" Panel</div>
+      <div class="whatif-grid">
+        <div class="wi-col">
+          <div class="wi-strategy">Doing Nothing</div>
+          <div class="wi-rate">Savings A/c · 3.5%</div>
+          <div class="wi-amount">${fmt(wiInactive)}</div>
+          <div class="wi-years">in ${wiYears} years</div>
+        </div>
+        <div class="wi-col">
+          <div class="wi-strategy">${PATH_LABELS[d.moneyWhere]||'Current Path'}</div>
+          <div class="wi-rate">${currentRate}% p.a.</div>
+          <div class="wi-amount">${fmt(wiCurrent)}</div>
+          <div class="wi-years">in ${wiYears} years</div>
+        </div>
+        <div class="wi-col best">
+          <div class="wi-strategy">Optimised Path</div>
+          <div class="wi-rate">${cagr}% CAGR</div>
+          <div class="wi-amount">${fmt(wiOptimised)}</div>
+          <div class="wi-years">in ${wiYears} years</div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--text-muted);line-height:1.5">Optimised path assumes your recommended allocation. Past performance is not a guarantee — but the compounding math is real.</p>
+    </div>
+    ` : ''}
+
+    <div class="r-card">
+      <div class="r-card-title">Monthly SIP Compounding Simulator</div>
+      <div class="sip-hl">
+        <div>
+          <div class="lbl">Recommended Monthly SIP</div>
+          <div class="amt">${fmt(sip)}</div>
+          <div class="sub">~70% of your ₹${fmt(d.surplus)} monthly surplus</div>
+        </div>
+        <span style="font-size:32px">📅</span>
+      </div>
+      <table class="c-table">
+        <thead><tr><th>Horizon</th><th>Your Path (${cagr}%)</th><th>Aggressive (${aggressiveCagr}%)</th></tr></thead>
+        <tbody>${compRows}</tbody>
+      </table>
+      ${d.age < 35 ? `<div style="margin-top:14px;padding:12px;background:var(--sage-pale);border-radius:9px;font-size:12px;color:#4A9B6F;line-height:1.5"><strong>⏳ Age Advantage:</strong> At ${d.age}, compounding has ${65-d.age}+ years to run. Even a 2% CAGR improvement compounds to a dramatically larger number over 30 years. Time is your most irreplaceable asset.</div>` : ''}
+    </div>
+
+    <div class="r-card">
+      <div class="r-card-title">Personalised Insights</div>
+      ${(insights||[]).map(ins=>`
+        <div class="insight">
+          <div class="ins-icon ${ins.type}"><span>${ins.icon}</span></div>
+          <div><h4>${ins.title}</h4><p>${ins.text}</p></div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="cta-block">
+      <div style="text-align:center;padding:36px 24px 32px;background:var(--navy-2);border:1px solid var(--border-2);border-radius:var(--radius)">
+        <div style="font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:18px;font-weight:500">Free · 15 minutes</div>
+        <div style="font-family:'Fraunces',serif;font-size:clamp(20px,5vw,26px);font-weight:400;color:var(--white);line-height:1.35;margin-bottom:10px">Got your profile.<br>Now let's actually talk.</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;line-height:1.6;max-width:340px;margin-left:auto;margin-right:auto">A quick call to see if a deeper review makes sense for you.</div>
+        <a href="https://calendly.com/vidhaanjain/investmentfirst" target="_blank" style="display:inline-block;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:0.5px;padding:11px 32px;border-radius:6px;text-decoration:none;transition:background 0.2s,color 0.2s" onmouseover="this.style.background='var(--gold)';this.style.color='var(--navy)'" onmouseout="this.style.background='transparent';this.style.color='var(--gold)'">Book your free call</a>
+        <div style="margin-top:20px;font-size:11px;color:var(--text-muted);opacity:0.6;line-height:1.9;letter-spacing:0.2px">
+          60,000+ followers &nbsp;·&nbsp; ₹2Cr+ portfolio oversight<br>
+          <span style="opacity:0.7">worked with · Jio Finance · Kotak · ICICI · Phillip Capital · 50+ brands</span>
+        </div>
+      </div>
+
+      ${d.waitlist ? `
+        <div class="r-card" style="text-align:center;padding:20px">
+          <div style="font-size:28px;margin-bottom:8px">🎓</div>
+          <div style="font-family:'Fraunces',serif;font-size:18px;color:var(--white);margin-bottom:6px">You're on the waitlist!</div>
+          <div style="font-size:13px;color:var(--text-muted)">We'll email <strong style="color:var(--text)">${d.email}</strong> with early bird pricing when the course launches.</div>
+        </div>
+      ` : `
+        <div class="cta-course" id="courseBlock" onclick="showWaitlist()">
+          <div class="cta-pre">Coming soon · Early bird discount</div>
+          <div class="cta-title">WiserMoney Finance Course</div>
+          <div class="cta-desc">Learn to execute your DNA blueprint — SIP selection, fund picking, tax efficiency, and avoiding the behavioural traps that lose most investors money.</div>
+          <div class="cta-btn-inner">🔔 Join Waitlist →</div>
+        </div>
+        <div id="wlForm" class="hidden r-card" style="padding:18px">
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px">Enter your email to join the waitlist:</div>
+          <div style="display:flex;gap:8px">
+            <input type="email" id="wlEmail" value="${d.email}" placeholder="${d.email}" style="flex:1;padding:10px 14px;background:var(--navy-3);border:1.5px solid var(--border-2);border-radius:9px;color:var(--white);font-size:14px;font-family:'DM Sans',sans-serif"/>
+            <button onclick="joinWL('${d.email}')" style="padding:10px 16px;background:var(--gold);color:var(--navy);border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif">Join →</button>
+          </div>
+        </div>
+      `}
+    </div>
+
+    <p class="privacy">Made with ❤️ by <strong>Wiser with Vidhaan</strong><br>Your data is private and never sold or shared with anyone.</p>
+  `;
+
+  document.getElementById('sReport').innerHTML = html;
+  // Animate bars after render
+  setTimeout(() => {
+    document.querySelectorAll('.alloc-fill').forEach(el => { const w = el.style.width; el.style.width='0'; setTimeout(()=>el.style.width=w, 50); });
+  }, 100);
+}
+
+function showWaitlist() {
+  document.getElementById('courseBlock').classList.add('hidden');
+  document.getElementById('wlForm').classList.remove('hidden');
+}
+
+async function joinWL(origEmail) {
+  const email = document.getElementById('wlEmail').value.trim() || origEmail;
+  try {
+    await fetch(`${SB_URL}/rest/v1/wisermoney_profiles?email=eq.${encodeURIComponent(email)}`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`},
+      body: JSON.stringify({course_waitlist:true})
+    });
+  } catch(e){}
+  document.getElementById('wlForm').innerHTML = `<div style="text-align:center;padding:8px"><div style="font-size:24px;margin-bottom:6px">🎓</div><div style="font-size:14px;font-weight:500;color:var(--white)">You're on the list!</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px">We'll email ${email} with early bird pricing.</div></div>`;
+}
+
+// ── INIT ──
+go(0);
+</script>
+</body>
+</html>
