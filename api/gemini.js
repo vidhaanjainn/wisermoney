@@ -1,62 +1,33 @@
-export const config = { runtime: 'edge' };
-
-export default async function handler(req) {
-  // Only allow POST
+export default async function handler(req, res) {
+  // Only POST
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
-
-  // Optional: restrict to your domain in production
-  // const origin = req.headers.get('origin') || '';
-  // if (!origin.includes('wisermoney') && process.env.NODE_ENV === 'production') {
-  //   return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 });
-  // }
 
   const GEMINI_KEY = process.env.GEMINI_KEY;
   if (!GEMINI_KEY) {
-    return new Response(JSON.stringify({ error: 'API key not configured' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return res.status(500).json({ error: 'API key not configured' });
   }
 
-  let body;
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-
-  const { prompt } = body;
+  const { prompt } = req.body;
   if (!prompt || typeof prompt !== 'string') {
-    return new Response(JSON.stringify({ error: 'prompt required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return res.status(400).json({ error: 'prompt required' });
   }
 
-  const geminiRes = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-    }
-  );
+  try {
+    const geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      }
+    );
 
-  const data = await geminiRes.json();
+    const data = await geminiRes.json();
+    return res.status(geminiRes.status).json(data);
 
-  return new Response(JSON.stringify(data), {
-    status: geminiRes.status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    }
-  });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
 }
