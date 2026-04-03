@@ -810,7 +810,8 @@ select option { background: var(--navy-2); }
 
 <script>
 // ── CONFIG ──
-const GEMINI_KEY = 'AIzaSyCNKObMtue7rmk7-njdzJV1Xo8OCg03a1E';
+// Gemini key is NEVER in the browser. Calls go to /api/gemini (Vercel Edge Function).
+const GEMINI_PROXY = '/api/gemini';
 const SB_URL = 'https://hjuwbgmsgwezpnqwpcve.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdXdiZ21zZ3dlenBucXdwY3ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4NjUyMjIsImV4cCI6MjA5MDQ0MTIyMn0.GjN0DpEgjwikw7hJ0vKqNfyEPzFd7qAkTcKSMCL5C4Q';
 const CALENDLY = 'https://calendly.com/vidhaanjain/investmentfirst';
@@ -1011,32 +1012,94 @@ function gather() {
   };
 }
 
-// ── RULE-BASED FALLBACK ──
+// ── RULE-BASED FALLBACK (runs only if Gemini proxy fails) ──
 function ruleBased(d) {
   const sc = d.bScore;
+
+  // Multi-signal archetype selection (not just bScore)
   let archKey = 'The Balanced Builder';
-  for (const [k,v] of Object.entries(ARCHETYPES)) {
-    if (sc >= v.range[0] && sc <= v.range[1]) { archKey = k; break; }
+  if (sc <= 22 || d.experience === 'new' || d.termInsurance === 'dontknow') {
+    archKey = 'The Anxious Saver';
+  } else if (sc <= 32 || (d.age > 45 && d.goal === 'retirement') || d.goal === 'emergency') {
+    archKey = 'The Cautious Accumulator';
+  } else if (sc <= 38) {
+    archKey = 'The Balanced Builder';
+  } else if (sc <= 42 || (d.experience === 'active' && d.comfort.includes('stocks'))) {
+    archKey = 'The Confident Investor';
+  } else if (sc >= 43 || (d.experience === 'advanced' && d.age < 35)) {
+    archKey = 'The Aggressive Compounder';
   }
+
   const arch = ARCHETYPES[archKey];
-  let alloc = {...arch.alloc};
+  let alloc = { ...arch.alloc };
+
   // Age adjustment
-  if (d.age < 30 && alloc.equity < 75) { alloc.equity = Math.min(alloc.equity+10, 85); alloc.debt = Math.max(alloc.debt-10, 5); }
-  if (d.age > 50) { alloc.equity = Math.max(alloc.equity-15, 20); alloc.debt += 15; }
-  // Normalize
-  const total = Object.values(alloc).reduce((a,v)=>a+v,0);
-  if (total !== 100) alloc.debt += (100-total);
+  if (d.age < 30 && alloc.equity < 75) {
+    alloc.equity = Math.min(alloc.equity + 10, 85);
+    alloc.debt = Math.max(alloc.debt - 10, 5);
+  }
+  if (d.age > 50) {
+    alloc.equity = Math.max(alloc.equity - 15, 20);
+    alloc.debt = Math.min(alloc.debt + 15, 60);
+  }
+  // Goal adjustment: emergency goal → cap equity
+  if (d.goal === 'emergency') {
+    alloc.equity = Math.min(alloc.equity, 30);
+    alloc.debt = Math.max(alloc.debt, 40);
+  }
+  // Normalize to 100
+  const total = Object.values(alloc).reduce((a, v) => a + v, 0);
+  if (total !== 100) alloc.debt += (100 - total);
 
   const cagr = arch.cagr;
+
+  // Personalised insights using actual profile data
+  const surplusFmt = fmt(d.investable);
+  const existingFmt = fmt(d.existing);
+  const emiNote = d.emi > 0 ? ` Your ₹${fmt(d.emi)} in EMIs limits your investable surplus — clear high-interest debt first.` : '';
+
+  const strengthText = sc >= 38
+    ? `You scored ${sc}/50 on the behavioural scale — strong emotional discipline around volatility. With ₹${fmt(d.surplus)} monthly surplus, your biggest edge is consistency, not stock-picking.`
+    : d.existing > 0
+    ? `You've already accumulated ${existingFmt} — that's a real foundation. Most young Indians have zero. The habit of saving is the hardest part, and you've cracked it.`
+    : `You're earning ₹${fmt(d.income)}/month and taking the time to understand your money — that self-awareness is more valuable than any hot stock tip.`;
+
+  const cautionText = sc < 30
+    ? `Fear of loss may be keeping you in savings accounts and FDs at 6–7% while inflation runs at 5–6%. Your real return is near zero.${emiNote}`
+    : d.emi > (d.income * 0.3)
+    ? `Your EMI-to-income ratio is high (${Math.round((d.emi / d.income) * 100)}%). This reduces your investment capacity significantly — prioritise paying down expensive debt before maximising SIPs.`
+    : `Overconfidence after a bull run is the most common mistake at your profile level. The Nifty has had 3 corrections >20% in the last decade. Your allocation must assume this will happen again.`;
+
+  const actionText = d.investable > 0
+    ? `Automate a SIP of ${surplusFmt} into a Nifty 50 index fund starting this week. Set it to debit on salary day so the money is invested before you see it. Automation removes emotion — that's the entire point.`
+    : `Your surplus is tight right now. Start with ₹500/month in a Nifty 50 index fund — the amount matters less than the habit. Increase by ₹500 every time your income grows.`;
+
+  let insText = '';
+  if (d.termInsurance === 'no' || d.termInsurance === 'dontknow') {
+    insText = `At ${d.age}, a ₹1 Cr term cover costs approximately ₹7,000–12,000/year — less than ₹1,000/month. This should happen before your next SIP increase. Your family's financial security cannot be an afterthought.`;
+  } else if (d.licPolicy === 'yes') {
+    const licGrowth10 = d.existing > 0 ? fmt(d.existing * Math.pow(1.045, 10)) : '';
+    const mfGrowth10 = d.existing > 0 ? fmt(d.existing * Math.pow(1.12, 10)) : '';
+    insText = `LIC endowment policies return ~4.5% CAGR. The same premium in an equity MF historically compounds at 11–12%.${d.existing > 0 ? ` Over 10 years: LIC gives ${licGrowth10}, MF gives ${mfGrowth10} — a difference worth reviewing.` : ' Consider a fee-only advisor to review if surrendering makes sense for your policy.'}`;
+  } else if (d.healthInsurance === 'employer') {
+    insText = `Employer health cover disappears the moment you switch jobs — often when financial stress is highest. A ₹10L personal floater costs ₹8,000–15,000/year and should be non-negotiable regardless of what your employer provides.`;
+  } else if (d.healthInsurance === 'no') {
+    insText = `No health insurance means one hospitalisation can erase months of savings. A ₹5L personal health floater costs under ₹1,000/month — get this before any investment conversation.`;
+  } else {
+    insText = `Your insurance setup looks reasonable. Next step: review your term cover amount — a ₹1 Cr cover is the bare minimum; aim for 10–15x your annual income as your earnings grow.`;
+  }
+
   const insights = [
-    { type:'str', icon:'✅', title:'Your Strength', text: sc >= 35 ? 'Strong emotional discipline around volatility — this is the rarest and most valuable investing edge.' : 'You prioritise capital protection, which prevents impulsive decisions during market panic.' },
-    { type:'cau', icon:'⚠️', title:'Watch Out For', text: sc < 30 ? 'Fear of loss might keep you in low-yield instruments longer than optimal. Inflation silently erodes FD returns.' : 'Overconfidence in bull runs can lead to concentration risk — diversification is your hedge.' },
-    { type:'act', icon:'🎯', title:'First Action Step', text: d.emi > 0 ? `You carry ₹${(d.emi/1000).toFixed(0)}K in EMIs. If any loan exceeds 12% interest, prioritise clearing it before maximising SIPs.` : `Automate a SIP of ${fmt(d.investable)} immediately. Automation removes emotion from the equation.` }
+    { type: 'str', icon: '✅', title: 'Your Strength', text: strengthText },
+    { type: 'cau', icon: '⚠️', title: 'Watch Out For', text: cautionText },
+    { type: 'act', icon: '🎯', title: 'First Action Step', text: actionText },
+    { type: 'ins', icon: '💡', title: 'Insurance Reality Check', text: insText }
   ];
-  return { archetype: archKey, arch, alloc, cagr, aggressiveCagr: 14, insights, riskScore: arch.riskScore };
+
+  return { archetype: archKey, arch, alloc, cagr, aggressiveCagr: 14, insights, riskScore: arch.riskScore, _source: 'rules' };
 }
 
-// ── GEMINI ──
+// ── GEMINI (via server-side proxy — key never exposed to browser) ──
 async function callGemini(d) {
   const prompt = `You are an expert financial advisor for Indian investors. Analyse this profile and return ONLY valid JSON (no markdown, no backticks, no explanation).
 
@@ -1053,33 +1116,85 @@ Investor Profile:
 
 Choose ONE archetype from: "The Anxious Saver", "The Cautious Accumulator", "The Balanced Builder", "The Confident Investor", "The Aggressive Compounder"
 
+Selection logic:
+- bScore 5-22 AND (experience=new OR termInsurance=no) → lean toward Anxious Saver
+- bScore 23-32 OR (age>45 AND goal=retirement) → Cautious Accumulator
+- bScore 33-38 OR (goal=wealth AND experience=tried) → Balanced Builder
+- bScore 39-42 OR (experience=active AND comfort includes stocks) → Confident Investor  
+- bScore 43-50 OR (experience=advanced AND age<35) → Aggressive Compounder
+- Always age-adjust: age>50 reduce equity by 10-15%, age<30 increase equity by 5-10%
+- If goal=emergency, cap equity at 40% regardless of score
+
 Return this exact JSON:
 {
-  "archetype": "exact name",
-  "riskScore": 1-10,
+  "archetype": "exact name from list above",
+  "riskScore": <integer 1-10, must match archetype: Anxious=2, Cautious=4, Balanced=5, Confident=7, Aggressive=9>,
   "alloc": {"equity": N, "debt": N, "gold": N, "emergency": N},
-  "cagr": N,
+  "cagr": <realistic number 7-14, consistent with archetype>,
   "aggressiveCagr": 14,
   "insights": [
-    {"type":"str","icon":"✅","title":"Your Strength","text":"personalised, mention their actual numbers"},
-    {"type":"cau","icon":"⚠️","title":"Watch Out For","text":"specific caution for their profile"},
-    {"type":"act","icon":"🎯","title":"First Action Step","text":"very specific step in ₹ terms"},
-    {"type":"ins","icon":"💡","title":"Insurance Reality Check","text":"personalised comment on their insurance gaps"}
+    {
+      "type": "str",
+      "icon": "✅",
+      "title": "Your Strength",
+      "text": "<2 sentences, mention their actual numbers like income/surplus/existing investments, be specific to what they selected>"
+    },
+    {
+      "type": "cau",
+      "icon": "⚠️",
+      "title": "Watch Out For",
+      "text": "<1-2 sentences, specific caution based on their profile — e.g. if high EMI mention debt drag, if LIC mention opportunity cost, if overconfident score mention concentration risk>"
+    },
+    {
+      "type": "act",
+      "icon": "🎯",
+      "title": "First Action Step",
+      "text": "<very specific, include exact ₹ amount, e.g. 'Start a ₹X SIP in a Nifty 50 index fund this week. Automate it so it leaves your account before you can spend it.'>"
+    },
+    {
+      "type": "ins",
+      "icon": "💡",
+      "title": "Insurance Reality Check",
+      "text": "<personalised: if no term insurance under 40, urgent flag with ₹ cost estimate; if employer health only, flag the gap; if LIC, mention 4.5% vs 12% CAGR difference>"
+    }
   ]
 }
 
-Rules: alloc must sum to 100. cagr 7-14. Be specific to Indian market. Age-adjust equity allocation. If they have LIC endowment, mention the opportunity cost. If no term insurance and age < 40, flag this as urgent.`;
+Hard rules:
+- alloc values must sum to exactly 100
+- emergency is always 10 minimum
+- cagr must be consistent: Anxious=8, Cautious=10, Balanced=11, Confident=12, Aggressive=14
+- Never use generic text. Every insight must reference something specific from their profile.
+- Indian context: mention Nifty 50, flexi cap, ELSS, SGBs where relevant`;
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+  const res = await fetch(GEMINI_PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt })
   });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Proxy error ${res.status}: ${errText}`);
+  }
+
   const json = await res.json();
+
+  // Gemini error passthrough
+  if (json.error) throw new Error(json.error.message || 'Gemini API error');
+
   const raw = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  const clean = raw.replace(/```json|```/g,'').trim();
+  if (!raw) throw new Error('Empty Gemini response');
+
+  const clean = raw.replace(/```json|```/g, '').trim();
   const parsed = JSON.parse(clean);
+
+  // Validate alloc sums to 100
+  const allocSum = Object.values(parsed.alloc || {}).reduce((a, v) => a + v, 0);
+  if (Math.abs(allocSum - 100) > 2) throw new Error(`Alloc sum invalid: ${allocSum}`);
+
   parsed.arch = ARCHETYPES[parsed.archetype] || ARCHETYPES['The Balanced Builder'];
+  parsed._source = 'gemini'; // track that AI was used
   return parsed;
 }
 
@@ -1202,7 +1317,7 @@ function renderReport(d, r) {
   }
 
   const html = `
-    <div class="step-label" style="margin-bottom:8px">Your DNA Report · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+    <div class="step-label" style="margin-bottom:8px">Your DNA Report · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}${r._source === 'gemini' ? ' · <span style="color:var(--teal);font-size:9px">✦ AI-Personalised</span>' : ' · <span style="color:var(--text-muted);font-size:9px">Rule-Based</span>'}</div>
     <h2 class="section-title" style="margin-bottom:20px">Hey ${d.name.split(' ')[0]}, <em>here's your DNA</em></h2>
 
     <div class="arch-hero">
