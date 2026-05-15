@@ -1671,7 +1671,10 @@ function renderReport(d, r) {
       `}
     </div>
 
-    <button class="pdf-btn" onclick="window.print()">⬇ Download as PDF</button>
+    <div style="display:flex;gap:10px;margin-top:12px;">
+      <button class="pdf-btn" style="margin-top:0;flex:1" onclick="window.print()">⬇ Save as PDF</button>
+      <button class="pdf-btn" style="margin-top:0;flex:1" onclick="shareToInstagram('${archetype}','${arch?.emoji||'📊'}',${alloc.equity},${alloc.debt},${alloc.gold},${riskScore})">↗ Share</button>
+    </div>
 
     <p class="privacy">Made with ❤️ by <strong>Wiser with Vidhaan</strong><br>Your data is private and never sold or shared with anyone.</p>
     <div class="print-footer">wisermoney.vercel.app · Wiser with Vidhaan · Generated ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</div>
@@ -1699,6 +1702,133 @@ async function joinWL(origEmail) {
     });
   } catch(e){}
   document.getElementById('wlForm').innerHTML = `<div style="text-align:center;padding:8px"><div style="font-size:24px;margin-bottom:6px">🎓</div><div style="font-size:14px;font-weight:500;color:var(--white)">You're on the list!</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px">We'll email ${email} with early bird pricing.</div></div>`;
+}
+
+// ── INSTAGRAM SHARE CARD ──
+async function shareToInstagram(archetype, emoji, equity, debt, gold, riskScore) {
+  const SIZE = 1080;
+  const c = document.createElement('canvas');
+  c.width = c.height = SIZE;
+  const ctx = c.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#090B0F';
+  ctx.fillRect(0, 0, SIZE, SIZE);
+
+  // Gold radial glow top-right
+  const g1 = ctx.createRadialGradient(900, 180, 0, 900, 180, 500);
+  g1.addColorStop(0, 'rgba(245,200,66,0.18)');
+  g1.addColorStop(1, 'rgba(245,200,66,0)');
+  ctx.fillStyle = g1;
+  ctx.fillRect(0, 0, SIZE, SIZE);
+
+  // Teal glow bottom-left
+  const g2 = ctx.createRadialGradient(160, 900, 0, 160, 900, 400);
+  g2.addColorStop(0, 'rgba(0,217,160,0.12)');
+  g2.addColorStop(1, 'rgba(0,217,160,0)');
+  ctx.fillStyle = g2;
+  ctx.fillRect(0, 0, SIZE, SIZE);
+
+  // Top label
+  ctx.font = '500 28px DM Sans, sans-serif';
+  ctx.fillStyle = 'rgba(245,200,66,0.7)';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('WISER WITH VIDHAAN · INVESTOR DNA', 80, 100);
+
+  // Emoji
+  ctx.font = '140px serif';
+  ctx.fillText(emoji, 80, 310);
+
+  // Archetype name
+  ctx.font = '700 88px DM Serif Display, serif';
+  ctx.fillStyle = '#EDE9E3';
+  // Word wrap if long
+  const words = archetype.split(' ');
+  let line = '', y = 430;
+  for (const w of words) {
+    const test = line + w + ' ';
+    if (ctx.measureText(test).width > 920 && line) {
+      ctx.fillText(line.trim(), 80, y); y += 100; line = w + ' ';
+    } else { line = test; }
+  }
+  ctx.fillText(line.trim(), 80, y);
+
+  // Divider
+  const lineY = y + 60;
+  ctx.strokeStyle = 'rgba(245,200,66,0.25)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(80, lineY); ctx.lineTo(1000, lineY); ctx.stroke();
+
+  // Allocation pills
+  const pills = [
+    { label: 'Equity', val: equity + '%', color: '#F5C842' },
+    { label: 'Debt',   val: debt   + '%', color: '#00D9A0' },
+    { label: 'Gold',   val: gold   + '%', color: '#FF8C42' },
+  ];
+  let px = 80;
+  const pillY = lineY + 55;
+  ctx.font = '500 30px DM Sans, sans-serif';
+  for (const p of pills) {
+    const w = ctx.measureText(p.label + '  ' + p.val).width + 56;
+    // pill bg
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    roundRect(ctx, px, pillY - 36, w, 58, 29);
+    ctx.fill();
+    // label
+    ctx.fillStyle = 'rgba(237,233,227,0.5)';
+    ctx.fillText(p.label, px + 24, pillY + 6);
+    // value
+    ctx.fillStyle = p.color;
+    ctx.fillText(p.val, px + 24 + ctx.measureText(p.label + '  ').width, pillY + 6);
+    px += w + 16;
+  }
+
+  // Risk score
+  ctx.font = '400 28px DM Sans, sans-serif';
+  ctx.fillStyle = 'rgba(237,233,227,0.4)';
+  ctx.fillText(`Risk Score  ${riskScore}/10`, 80, pillY + 80);
+
+  // Bottom URL
+  ctx.font = '500 30px DM Sans, sans-serif';
+  ctx.fillStyle = '#F5C842';
+  ctx.fillText('wisermoney.vercel.app', 80, SIZE - 90);
+  ctx.font = '400 26px DM Sans, sans-serif';
+  ctx.fillStyle = 'rgba(237,233,227,0.35)';
+  ctx.fillText('Take the free assessment →', 80, SIZE - 50);
+
+  // Convert to blob & share
+  c.toBlob(async (blob) => {
+    const file = new File([blob], 'my-investor-dna.png', { type: 'image/png' });
+    const caption = `I just discovered my Investor DNA 🧬\n\n${emoji} ${archetype}\n${equity}% Equity · ${debt}% Debt · ${gold}% Gold\n\nFind yours free → wisermoney.vercel.app`;
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: 'My Investor DNA', text: caption });
+        return;
+      } catch(e) { if (e.name === 'AbortError') return; }
+    }
+    // Fallback: download image + copy caption
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'my-investor-dna.png'; a.click();
+    URL.revokeObjectURL(url);
+    try { await navigator.clipboard.writeText(caption); } catch(_){}
+    alert('Image downloaded!\n\nCaption copied to clipboard — paste it when you upload to Instagram.');
+  }, 'image/png');
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
 }
 
 // ── INIT ──
