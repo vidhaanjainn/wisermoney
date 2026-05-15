@@ -609,6 +609,66 @@ select option { background: var(--navy-2); }
 
 /* ── DIVIDER ── */
 .divider { height: 1px; background: var(--border); margin: 20px 0; }
+/* ── PDF DOWNLOAD BUTTON ── */
+.pdf-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent; border: 1px solid var(--border-2);
+  border-radius: 10px; padding: 11px 20px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-muted); cursor: pointer; transition: all 0.18s;
+  text-decoration: none; margin-top: 12px; width: 100%; justify-content: center;
+}
+.pdf-btn:hover { border-color: var(--gold-border); color: var(--gold); }
+
+/* ── PRINT STYLES ── */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff !important; color: #111 !important; font-size: 13px; }
+  .header, .progress-wrap, .pdf-btn, .cta-block, .btn, .privacy, .step-label { display: none !important; }
+  .container { max-width: 100%; padding: 0; }
+  .report { animation: none !important; }
+  .r-card { background: #f8f8f8 !important; border: 1px solid #ddd !important; break-inside: avoid; margin-bottom: 12px; }
+  .r-card-title { color: #666 !important; }
+  .arch-hero { background: #f0f0f0 !important; border: 1px solid #ccc !important; break-inside: avoid; }
+  .arch-name { color: #111 !important; }
+  .arch-tag, .arch-pre { color: #555 !important; }
+  .risk-pill { background: #e8e8e8 !important; border-color: #ccc !important; color: #333 !important; }
+  .pct-banner { break-inside: avoid; }
+  .pct-banner.top { background: #f0faf5 !important; border-color: #b2dfcc !important; }
+  .pct-banner.mid { background: #fffbf0 !important; border-color: #ffe0a0 !important; }
+  .pct-number { color: #b8860b !important; }
+  .pct-text strong { color: #111 !important; }
+  .pct-text span, .insight p, .r-card p { color: #444 !important; }
+  .alloc-track { background: #ddd !important; }
+  .alloc-lbl, .alloc-pct { color: #333 !important; }
+  .insight h4 { color: #111 !important; }
+  .ins-icon { background: #eee !important; }
+  .sip-hl { background: #f5f5f5 !important; border-color: #ddd !important; break-inside: avoid; }
+  .sip-hl .lbl { color: #777 !important; }
+  .sip-hl .amt { color: #b8860b !important; }
+  .sip-hl .sub { color: #999 !important; }
+  .c-table th { color: #777 !important; border-color: #ddd !important; }
+  .c-table td { border-color: #eee !important; color: #111 !important; }
+  .c-table .corp { color: #111 !important; }
+  .c-table .agg { color: #b8860b !important; }
+  .c-table .badge { background: #e8f5ec !important; color: #2d7a4a !important; }
+  .wi-col { background: #f5f5f5 !important; border-color: #ddd !important; }
+  .wi-col.best { background: #fffbf0 !important; border-color: #ffe0a0 !important; }
+  .wi-amount { color: #111 !important; }
+  .wi-col.best .wi-amount { color: #b8860b !important; }
+  .ins-nudge { break-inside: avoid; }
+  .ins-nudge.red   { background: #fff0f0 !important; border-color: #ffb3b3 !important; }
+  .ins-nudge.red strong   { color: #c0392b !important; }
+  .ins-nudge.amber { background: #fff8f0 !important; border-color: #ffd0a0 !important; }
+  .ins-nudge.amber strong { color: #e67e22 !important; }
+  .ins-nudge.green { background: #f0faf5 !important; border-color: #b2dfcc !important; }
+  .ins-nudge.green strong { color: #27ae60 !important; }
+  .lic-warn { background: #fff8f0 !important; border-color: #ffd0a0 !important; break-inside: avoid; }
+  .lic-warn-text strong { color: #e67e22 !important; }
+  .whatif-grid { break-inside: avoid; }
+  .print-footer { display: block !important; }
+}
+.print-footer { display: none; text-align: center; margin-top: 20px; font-size: 11px; color: #999; }
 </style>
 </head>
 <body>
@@ -1611,7 +1671,10 @@ function renderReport(d, r) {
       `}
     </div>
 
+    <button class="pdf-btn" onclick="window.print()">⬇ Download as PDF</button>
+
     <p class="privacy">Made with ❤️ by <strong>Wiser with Vidhaan</strong><br>Your data is private and never sold or shared with anyone.</p>
+    <div class="print-footer">wisermoney.vercel.app · Wiser with Vidhaan · Generated ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</div>
   `;
 
   document.getElementById('sReport').innerHTML = html;
