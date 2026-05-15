@@ -972,7 +972,7 @@ function compoundLump(principal, rate, years) {
 
 // ── NAVIGATION ──
 function go(n) {
-  ['s0','s1','s2','s3','s4','s5','sLoading','sReport'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  ['s0','s1','s2','s3','s4','s4b','s5','sLoading','sReport'].forEach(id => document.getElementById(id).classList.add('hidden'));
   document.getElementById('s'+n).classList.remove('hidden');
   document.getElementById('progressBar').style.width = ((n/TOTAL)*100) + '%';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1061,7 +1061,7 @@ function v3() {
 function v4() {
   if (!S.goal) return showErr('e4','Please select your primary financial goal.');
   if (!document.getElementById('f_horizon').value) return showErr('e4','Please select your time horizon.');
-  ['s0','s1','s2','s3','s4','s5','sLoading','sReport'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  ['s0','s1','s2','s3','s4','s4b','s5','sLoading','sReport'].forEach(id => document.getElementById(id).classList.add('hidden'));
   document.getElementById('s4b').classList.remove('hidden');
   document.getElementById('progressBar').style.width = '88%';
   window.scrollTo({top:0,behavior:'smooth'});
