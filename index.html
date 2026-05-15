@@ -522,16 +522,31 @@ select option { background: var(--navy-2); }
 
 /* Insurance nudge */
 .ins-nudge {
-  background: var(--teal-pale);
-  border: 1px solid rgba(42,157,143,0.3);
   border-radius: 12px;
   padding: 14px 16px;
   margin-bottom: 14px;
   font-size: 13px;
   color: var(--text-soft);
   line-height: 1.5;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
 }
-.ins-nudge strong { color: var(--teal); display: block; margin-bottom: 4px; font-size: 13px; }
+.ins-nudge strong { display: block; margin-bottom: 3px; font-size: 13px; font-weight: 600; }
+.ins-nudge-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.ins-nudge.red   { background: rgba(220,53,69,0.09);  border: 1px solid rgba(220,53,69,0.35); }
+.ins-nudge.red   strong { color: #FF5C6A; }
+.ins-nudge.amber { background: rgba(255,140,66,0.08); border: 1px solid rgba(255,140,66,0.3); }
+.ins-nudge.amber strong { color: #FF8C42; }
+.ins-nudge.green { background: rgba(0,217,160,0.07);  border: 1px solid rgba(0,217,160,0.25); }
+.ins-nudge.green strong { color: var(--teal); }
+
+/* Psychology interstitial */
+.psych-gate { min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 48px 24px; }
+.psych-gate-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--gold-pale); border: 1px solid var(--gold-border); border-radius: 100px; padding: 6px 18px; margin-bottom: 28px; font-size: 12px; color: var(--gold); font-weight: 500; }
+.psych-gate h2 { font-family: 'DM Serif Display', serif; font-size: clamp(28px,7vw,40px); color: var(--white); line-height: 1.15; margin-bottom: 14px; font-weight: 400; }
+.psych-gate h2 em { color: var(--gold); font-style: italic; }
+.psych-gate p { font-size: 15px; color: var(--text-muted); line-height: 1.7; max-width: 340px; margin-bottom: 36px; }
 
 /* CTAs */
 .cta-block { margin-top: 24px; }
@@ -778,6 +793,20 @@ select option { background: var(--navy-2); }
     <button class="btn btn-ghost" onclick="go(3)">← Back</button>
   </div>
 
+  <!-- ══ STEP 4b: PSYCHOLOGY GATE ══ -->
+  <div id="s4b" class="hidden">
+    <div class="psych-gate">
+      <div class="psych-gate-badge">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block"></span>
+        Almost there — Step 5 of 5
+      </div>
+      <h2>Last step. This is where<br>your report gets <em>personal.</em></h2>
+      <p>5 quick scenarios — no right or wrong answers. Just pick what you'd actually do. It takes under 2 minutes.</p>
+      <button class="btn btn-gold" style="max-width:280px" onclick="startPsych()">Show me the questions →</button>
+      <button class="btn btn-ghost" onclick="go(4)">← Back</button>
+    </div>
+  </div>
+
   <!-- ══ STEP 5: BEHAVIOURAL ══ -->
   <div id="s5" class="hidden">
     <div class="step-label">Step 5 of 5 — Your Mindset</div>
@@ -972,6 +1001,12 @@ function v3() {
 function v4() {
   if (!S.goal) return showErr('e4','Please select your primary financial goal.');
   if (!document.getElementById('f_horizon').value) return showErr('e4','Please select your time horizon.');
+  ['s0','s1','s2','s3','s4','s5','sLoading','sReport'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById('s4b').classList.remove('hidden');
+  document.getElementById('progressBar').style.width = '88%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function startPsych() {
   renderScenarios();
   go(5);
 }
@@ -1383,16 +1418,22 @@ function renderReport(d, r) {
   // Insurance nudges
   let insNudges = '';
   if (d.termInsurance === 'no' || d.termInsurance === 'dontknow') {
-    insNudges += `<div class="ins-nudge"><strong>⚡ Term Insurance — Urgent</strong>At age ${d.age}, a ₹1 Cr term cover costs roughly ₹7,000–12,000/year. This is the single most important financial product you don't have yet. Before SIPs, before MFs — sort this first.</div>`;
-  }
-  if (d.licPolicy === 'yes') {
-    insNudges += `<div class="ins-nudge"><strong>🔍 LIC/Endowment Reality Check</strong>Endowment policies typically return 4–5% CAGR over their tenure. The same premium invested in equity MFs over the same period would likely yield 3–4x more. Consider reviewing this with Vidhaan on your strategy call.</div>`;
-  }
-  if (d.healthInsurance === 'employer') {
-    insNudges += `<div class="ins-nudge"><strong>⚠️ Employer Health Cover is Not Enough</strong>Employer cover ends the moment you switch jobs or are between jobs — often when you need it most. A personal floater plan of ₹5–10L costs ₹6,000–15,000/year and is non-negotiable.</div>`;
+    insNudges += `<div class="ins-nudge red"><span class="ins-nudge-icon">🚨</span><div><strong>No Term Insurance — Act Before Your Next SIP</strong>At age ${d.age}, a ₹1 Cr cover costs ₹7,000–12,000/year. This protects everything you're building above. Sort this first.</div></div>`;
+  } else {
+    insNudges += `<div class="ins-nudge green"><span class="ins-nudge-icon">✅</span><div><strong>Term Insurance — Covered</strong>Good. The foundation is protected. Keep the cover amount in line with 10–15x your annual income as your earnings grow.</div></div>`;
   }
   if (d.healthInsurance === 'no') {
-    insNudges += `<div class="ins-nudge"><strong>🚨 No Health Insurance</strong>One hospitalisation without insurance can wipe out years of savings. Get a ₹5L personal health floater this month — it's more urgent than any investment.</div>`;
+    insNudges += `<div class="ins-nudge red"><span class="ins-nudge-icon">🚨</span><div><strong>No Health Insurance</strong>One hospitalisation can erase months of savings. A ₹5L personal floater costs under ₹1,000/month — get this before any SIP increase.</div></div>`;
+  } else if (d.healthInsurance === 'employer') {
+    insNudges += `<div class="ins-nudge amber"><span class="ins-nudge-icon">⚠️</span><div><strong>Employer Cover Isn't Enough</strong>It disappears the moment you switch jobs. A personal floater of ₹5–10L costs ₹6,000–15,000/year and is non-negotiable.</div></div>`;
+  } else {
+    insNudges += `<div class="ins-nudge green"><span class="ins-nudge-icon">✅</span><div><strong>Health Insurance — Covered</strong>Personal cover in place. Review the sum insured annually — inflation hits healthcare harder than most categories.</div></div>`;
+  }
+  if (d.licPolicy === 'yes') {
+    insNudges += `<div class="ins-nudge amber"><span class="ins-nudge-icon">🔍</span><div><strong>LIC/Endowment Policy</strong>These typically return 4–5% CAGR. The same premium in equity MFs would likely yield 3–4x more over the same period. Worth reviewing on your strategy call.</div></div>`;
+  }
+  if (d.emi > d.income * 0.4) {
+    insNudges += `<div class="ins-nudge amber"><span class="ins-nudge-icon">⚠️</span><div><strong>High EMI Load — ${Math.round((d.emi/d.income)*100)}% of Income</strong>This limits your investable surplus significantly. Prioritise clearing high-interest debt before increasing SIPs.</div></div>`;
   }
 
   // LIC what-if message
