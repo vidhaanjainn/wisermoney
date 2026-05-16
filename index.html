@@ -789,29 +789,13 @@ select option { background: var(--navy-2); }
     </div>
 
     <div class="form-group">
-      <label>Do you have Term Insurance?</label>
-      <div class="choice-grid three-col" id="termGrid">
-        <div class="cc" onclick="selTerm('yes',this)"><div class="lbl">✅ Yes, I do</div></div>
-        <div class="cc" onclick="selTerm('no',this)"><div class="lbl">❌ No, I don't</div></div>
-        <div class="cc" onclick="selTerm('dontknow',this)"><div class="lbl">🤷 What's that?</div></div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>LIC or Endowment / Money-Back Policy?</label>
-      <div class="choice-grid three-col" id="licGrid">
-        <div class="cc" onclick="selLIC('yes',this)"><div class="lbl">Yes, I pay premiums</div></div>
-        <div class="cc" onclick="selLIC('no',this)"><div class="lbl">No</div></div>
-        <div class="cc" onclick="selLIC('cancelled',this)"><div class="lbl">Had one, cancelled</div></div>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Do you have Health Insurance?</label>
-      <div class="choice-grid three-col" id="healthGrid">
-        <div class="cc" onclick="selHealth('yes',this)"><div class="lbl">Yes, covered</div></div>
-        <div class="cc" onclick="selHealth('employer',this)"><div class="lbl">Only employer cover</div></div>
-        <div class="cc" onclick="selHealth('no',this)"><div class="lbl">No health cover</div></div>
+      <label>Which of these do you have? <span class="opt">(select all that apply)</span></label>
+      <div class="tag-grid" id="insGrid">
+        <div class="tag" onclick="toggleIns('term',this)">Term Insurance</div>
+        <div class="tag" onclick="toggleIns('health',this)">Health Insurance (personal)</div>
+        <div class="tag" onclick="toggleIns('employer',this)">Employer health cover only</div>
+        <div class="tag" onclick="toggleIns('lic',this)">LIC / Endowment Policy</div>
+        <div class="tag" onclick="toggleIns('none',this)">None of these</div>
       </div>
     </div>
 
@@ -869,13 +853,8 @@ select option { background: var(--navy-2); }
 
   <!-- ══ STEP 5: BEHAVIOURAL ══ -->
   <div id="s5" class="hidden">
-    <div class="step-label">Step 5 of 5 — Your Mindset</div>
-    <h2 class="section-title">How do you <em>think</em> about money?</h2>
-    <p class="section-sub">5 real scenarios. No right or wrong — this reveals your true investor psychology.</p>
     <div id="scenWrap"></div>
     <div id="e5" class="err hidden"></div>
-    <button class="btn btn-gold" onclick="v5()">Analyse My DNA →</button>
-    <button class="btn btn-ghost" onclick="go(4)">← Back</button>
   </div>
 
   <!-- ══ LOADING ══ -->
@@ -912,11 +891,13 @@ const S = {
   moneyWhere: null,
   experience: null,
   comfort: [],
+  insuranceSel: [],
   termInsurance: null,
   licPolicy: null,
   healthInsurance: null,
   goal: null,
-  bAnswers: {}
+  bAnswers: {},
+  currentScen: 0
 };
 
 // ── SCENARIOS ──
@@ -940,6 +921,12 @@ const ARCHETYPES = {
 // ── CURRENT PATH RATES ──
 const PATH_RATES = { savings:6.5, lic:4.5, mf:10.5, stocks:10, mix:8.5, none:3.5 };
 const PATH_LABELS = { savings:'Savings/FD', lic:'LIC/Endowment', mf:'Mutual Funds', stocks:'Stocks', mix:'Mixed Portfolio', none:'Not Invested Yet' };
+const FUND_LINKS = {
+  equity:    { label:'Browse 5★ Flexi-Cap Funds →', url:'https://www.valueresearchonline.com/funds/selector/category/102/equity-flexi-cap/?star-rating=5&plan-type=direct&tab=returns-long-term' },
+  debt:      { label:'Browse 5★ Short Duration Funds →', url:'https://www.valueresearchonline.com/funds/selector/category/121/debt-short-duration/?star-rating=5&plan-type=direct&tab=returns-long-term' },
+  gold:      { label:'Browse Gold ETFs →', url:'https://www.valueresearchonline.com/funds/selector/category/144/commodities-gold/?plan-type=direct&tab=returns-long-term' },
+  emergency: { label:'Browse Liquid Funds →', url:'https://www.valueresearchonline.com/funds/selector/category/125/debt-liquid/?star-rating=5&plan-type=direct&tab=returns-long-term' }
+};
 
 // ── PERCENTILE DATA (based on RBI/SEBI data) ──
 // Monthly savings benchmarks for Indian households
@@ -994,9 +981,6 @@ function selSingle(gridId, val, el) {
 
 function selMoney(val, el)  { S.moneyWhere = selSingle('moneyGrid', val, el); }
 function selExp(val, el)    { S.experience = selSingle('expGrid', val, el); }
-function selTerm(val, el)   { S.termInsurance = selSingle('termGrid', val, el); }
-function selLIC(val, el)    { S.licPolicy = selSingle('licGrid', val, el); }
-function selHealth(val, el) { S.healthInsurance = selSingle('healthGrid', val, el); }
 function selGoal(val, el)   { S.goal = selSingle('goalGrid', val, el); }
 
 function toggleComfort(val, el) {
@@ -1005,28 +989,66 @@ function toggleComfort(val, el) {
   else S.comfort.push(val);
 }
 
+function toggleIns(val, el) {
+  if (val === 'none') {
+    S.insuranceSel = ['none'];
+    document.querySelectorAll('#insGrid .tag').forEach(t => t.classList.remove('sel'));
+    el.classList.add('sel');
+  } else {
+    S.insuranceSel = S.insuranceSel.filter(v => v !== 'none');
+    document.getElementById('insGrid').querySelector('[onclick*="\'none\'"]').classList.remove('sel');
+    el.classList.toggle('sel');
+    if (S.insuranceSel.includes(val)) S.insuranceSel = S.insuranceSel.filter(v=>v!==val);
+    else S.insuranceSel.push(val);
+  }
+}
+
 function toggleWL() {
   S.waitlist = !S.waitlist;
   document.getElementById('wlSw').classList.toggle('on', S.waitlist);
 }
 
 function selScenario(qid, idx, score, el) {
-  document.querySelectorAll('[id^="so_'+qid+'_"]').forEach(b => b.classList.remove('sel'));
+  document.querySelectorAll('[id^="so_'+qid+'_"]').forEach(b => { b.classList.remove('sel'); b.disabled = true; });
   el.classList.add('sel');
   S.bAnswers[qid] = {idx, score};
+  setTimeout(() => nextScenario(), 420);
+}
+
+function nextScenario() {
+  S.currentScen++;
+  if (S.currentScen < SCENARIOS.length) {
+    renderOneScenario();
+  } else {
+    v5();
+  }
 }
 
 // ── RENDER SCENARIOS ──
-function renderScenarios() {
-  document.getElementById('scenWrap').innerHTML = SCENARIOS.map((sc,i) => `
+function renderOneScenario() {
+  const i = S.currentScen;
+  const sc = SCENARIOS[i];
+  const dots = Array.from({length: SCENARIOS.length}, (_,k) =>
+    `<span style="width:7px;height:7px;border-radius:50%;display:inline-block;background:${k<i?'var(--gold)':k===i?'var(--gold)':'rgba(255,255,255,0.2)'};opacity:${k===i?1:k<i?0.6:0.3}"></span>`
+  ).join('');
+  document.getElementById('scenWrap').innerHTML = `
     <div class="scenario">
-      <div class="qnum">Question ${i+1} of ${SCENARIOS.length}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="qnum" style="margin:0">Question ${i+1} of ${SCENARIOS.length}</div>
+        <div style="display:flex;gap:5px;align-items:center">${dots}</div>
+      </div>
       <div class="qtxt">${sc.text}</div>
       <div class="s-opts">
         ${sc.opts.map((o,j) => `<button class="s-opt" onclick="selScenario('${sc.id}',${j},${o.s},this)" id="so_${sc.id}_${j}">${o.l}</button>`).join('')}
       </div>
     </div>
-  `).join('');
+  `;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderScenarios() {
+  S.currentScen = 0;
+  renderOneScenario();
 }
 
 // ── VALIDATIONS ──
@@ -1052,9 +1074,12 @@ function v2() {
 
 function v3() {
   if (!S.experience) return showErr('e3','Please select your investing experience.');
-  if (!S.termInsurance) return showErr('e3','Please answer the term insurance question.');
-  if (!S.licPolicy) return showErr('e3','Please answer the LIC/endowment question.');
-  if (!S.healthInsurance) return showErr('e3','Please answer the health insurance question.');
+  if (!S.insuranceSel.length) return showErr('e3','Please tell us what insurance you have.');
+  // derive the three fields from multi-select for backward compat
+  const sel = S.insuranceSel;
+  S.termInsurance   = sel.includes('term')     ? 'yes'      : (sel.includes('none') ? 'no' : 'no');
+  S.licPolicy       = sel.includes('lic')      ? 'yes'      : 'no';
+  S.healthInsurance = sel.includes('health')   ? 'yes'      : (sel.includes('employer') ? 'employer' : 'no');
   go(4);
 }
 
@@ -1578,6 +1603,7 @@ function renderReport(d, r) {
           <div class="alloc-track"><div class="alloc-fill" style="width:${v}%;background:${allocColors[k]}"></div></div>
           <span class="alloc-pct">${v}%</span>
         </div>
+        ${v > 0 && FUND_LINKS[k] ? `<a href="${FUND_LINKS[k].url}" target="_blank" rel="noopener" style="display:inline-block;font-size:11px;color:${allocColors[k]};text-decoration:none;margin:-4px 0 10px 0;opacity:0.85">${FUND_LINKS[k].label}</a>` : ''}
       `).join('')}
       <p style="font-size:11px;color:var(--text-muted);margin-top:12px;line-height:1.5">Based on age ${d.age}, ${d.goal} goal, ${d.horizon}-yr horizon, and behavioural profile. Emergency fund target: ${fmt(d.expenses*5)}.</p>
     </div>
