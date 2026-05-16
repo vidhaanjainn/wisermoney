@@ -910,12 +910,14 @@ const SCENARIOS = [
 ];
 
 // ── ARCHETYPES ──
+// Score ranges calibrated to actual scenario scoring:
+// All option-1 = 9, all option-2 = 20, all option-3 = 34, all option-4 = 46
 const ARCHETYPES = {
-  'The Anxious Saver':        { emoji:'🛡️', tagline:'Safety is your superpower — but fear may be quietly costing you real returns.', riskScore:2, range:[5,22],  alloc:{equity:20,debt:50,gold:20,emergency:10}, cagr:8  },
-  'The Cautious Accumulator': { emoji:'🐢', tagline:'Steady and disciplined. You\'re ready to step up the pace without losing sleep.', riskScore:4, range:[23,32], alloc:{equity:40,debt:35,gold:15,emergency:10}, cagr:10 },
-  'The Balanced Builder':     { emoji:'⚖️', tagline:'You balance risk and reward naturally — a rare quality most investors never develop.', riskScore:5, range:[33,38], alloc:{equity:55,debt:25,gold:10,emergency:10}, cagr:11 },
-  'The Confident Investor':   { emoji:'📈', tagline:'You understand markets and have the conviction to build serious wealth over time.', riskScore:7, range:[39,42], alloc:{equity:70,debt:15,gold:5,emergency:10}, cagr:12 },
-  'The Aggressive Compounder':{ emoji:'🚀', tagline:'You have the mindset to build generational wealth. The only variable is execution.', riskScore:9, range:[43,50], alloc:{equity:85,debt:5,gold:0,emergency:10}, cagr:14 }
+  'The Anxious Saver':        { emoji:'🛡️', tagline:'Safety is your superpower — but fear may be quietly costing you real returns.', riskScore:2, range:[9,19],  alloc:{equity:20,debt:50,gold:20,emergency:10}, cagr:8  },
+  'The Cautious Accumulator': { emoji:'🐢', tagline:'Steady and disciplined. You\'re ready to step up the pace without losing sleep.', riskScore:4, range:[20,26], alloc:{equity:40,debt:35,gold:15,emergency:10}, cagr:10 },
+  'The Balanced Builder':     { emoji:'⚖️', tagline:'You balance risk and reward naturally — a rare quality most investors never develop.', riskScore:6, range:[27,33], alloc:{equity:55,debt:25,gold:10,emergency:10}, cagr:11 },
+  'The Confident Investor':   { emoji:'📈', tagline:'You understand markets and have the conviction to build serious wealth over time.', riskScore:8, range:[34,39], alloc:{equity:70,debt:15,gold:5,emergency:10}, cagr:12 },
+  'The Aggressive Compounder':{ emoji:'🚀', tagline:'You have the mindset to build generational wealth. The only variable is execution.', riskScore:9, range:[40,46], alloc:{equity:85,debt:5,gold:0,emergency:10}, cagr:14 }
 };
 
 // ── CURRENT PATH RATES ──
@@ -1201,14 +1203,15 @@ function ruleBased(d) {
   // ARCHETYPE IS DRIVEN BY BEHAVIOURAL SCORE ONLY.
   // Experience and insurance affect allocation adjustments, NOT the archetype label.
   let archKey;
-  if      (sc <= 22) archKey = 'The Anxious Saver';
-  else if (sc <= 32) archKey = 'The Cautious Accumulator';
-  else if (sc <= 38) archKey = 'The Balanced Builder';
-  else if (sc <= 42) archKey = 'The Confident Investor';
+  if      (sc <= 19) archKey = 'The Anxious Saver';
+  else if (sc <= 26) archKey = 'The Cautious Accumulator';
+  else if (sc <= 33) archKey = 'The Balanced Builder';
+  else if (sc <= 39) archKey = 'The Confident Investor';
   else               archKey = 'The Aggressive Compounder';
 
-  // Risk score calculated from actual bScore (not hardcoded per archetype)
-  const riskScoreCalc = Math.round((sc / 50) * 10);
+  // Risk score mapped to archetype's fixed riskScore for consistency
+  const arch0 = ARCHETYPES[archKey];
+  const riskScoreCalc = arch0 ? arch0.riskScore : Math.round((sc / 46) * 10);
 
   const arch = ARCHETYPES[archKey];
   let alloc = { ...arch.alloc };
@@ -1307,11 +1310,11 @@ Investor Profile:
 
 ARCHETYPE SELECTION RULES (follow strictly):
 - Archetype is determined by behavioural score ONLY. Do NOT let experience or insurance status change the archetype.
-- bScore 5–22 → "The Anxious Saver"
-- bScore 23–32 → "The Cautious Accumulator"
-- bScore 33–38 → "The Balanced Builder"
-- bScore 39–42 → "The Confident Investor"
-- bScore 43–50 → "The Aggressive Compounder"
+- bScore 9–19 → "The Anxious Saver"
+- bScore 20–26 → "The Cautious Accumulator"
+- bScore 27–33 → "The Balanced Builder"
+- bScore 34–39 → "The Confident Investor"
+- bScore 40–46 → "The Aggressive Compounder"
 
 ALLOCATION ADJUSTMENTS (these adjust alloc%, NOT archetype):
 - New investor (experience=new): reduce equity by 10%, increase debt by 10%
@@ -1393,8 +1396,8 @@ Hard rules:
   if (Math.abs(allocSum - 100) > 2) throw new Error(`Alloc sum invalid: ${allocSum}`);
 
   parsed.arch = ARCHETYPES[parsed.archetype] || ARCHETYPES['The Balanced Builder'];
-  // Always use bScore-derived riskScore, not Gemini's guess
-  parsed.riskScore = Math.round((d.bScore / 50) * 10);
+  // Use the archetype's fixed riskScore for consistency
+  parsed.riskScore = parsed.arch?.riskScore ?? Math.round((d.bScore / 46) * 10);
   parsed.pfs = calcPFS(d);
   parsed._source = 'gemini'; // track that AI was used
   return parsed;
